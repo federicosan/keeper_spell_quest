@@ -1,3 +1,3 @@
-# Spells Bot
+# Keeper
 
-Server manager for the spells discord game.
+Dungeon master for the spells discord game.
