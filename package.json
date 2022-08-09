@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.15.0",
+    "@discordjs/rest": "^0.4.1",
+    "@replit/database": "^2.0.2",
+    "async-mutex": "^0.3.2",
+    "child_process": "^1.0.2",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "discord-api-types": "^0.33.1",
+    "discord.js": "^13.8.0",
+    "dotenv": "^16.0.1",
+    "emoji-regex": "^10.1.0",
+    "grapheme-breaker": "^0.3.2",
+    "moment": "^2.29.4",
+    "mongodb": "^4.6.0",
+    "pm2": "^5.2.0",
+    "web3": "^1.7.3",
+    "zod": "^3.11.6"
+  }
+}

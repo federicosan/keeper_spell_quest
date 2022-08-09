@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+
+# local env files
+.env
+.env.*
+last_stats_message.json
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc
+.DS_Store
+*.pem
+
+# ignore lockfiles
+package-lock.json
+yarn.lock
+
+# data
+data/
