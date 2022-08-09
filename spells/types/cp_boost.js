@@ -169,7 +169,7 @@ class CultPointBoostSpell {
       await interaction.editReply({ content: `error: couldn't find cultist | talk to @hypervisor`, components: [], ephemeral: true })
       return
     }
-    let active = await points.getActiveCultBoost(server, interaction.member.id)
+    let active = await points.getActiveCultBoost(server, member.id)
     if (active) {
       interaction.editReply({ content: 'a boost is currently active for ' + member.displayName, components: [], ephemeral: true })
       return
