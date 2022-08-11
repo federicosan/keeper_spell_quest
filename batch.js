@@ -314,6 +314,7 @@ class UserHistoryEntry {
     this.points = user.points
     this.coins = user.coins
     this.num_chants = user.num_chants
+    this.num_referral_chants = user.num_referral_chants ? user.num_referral_chants : 0
   }
 }
 

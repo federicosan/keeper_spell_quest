@@ -186,12 +186,6 @@ function isOneEmoji(input) {
   return GraphemeBreaker.break(input).length == 1
 }
 
-console.log("isOneEmoji:", isOneEmoji('🥸'))
-console.log("isOneEmoji:", isOneEmoji('🪱'))
-console.log("isOneEmoji:", isOneEmoji('🪱 t'))
-console.log("isOneEmoji:", isOneEmoji('t 🪱 t'))
-console.log("isOneEmoji:", isOneEmoji('🥸 t'))
-
 async function proposeName(server, message, cult, proposal) {
   // parse new name
   let lines = message.content.split(/\r?\n/)

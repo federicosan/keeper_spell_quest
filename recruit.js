@@ -103,6 +103,7 @@ async function _handleJoin(server, member) {
   }
   console.log("handleJoin: adding cult role of cult:", cult.id, "for user:", member.id)
   member.roles.add(cult.roleId)
+  member.roles.add(server.Roles.Cultist)
   if (!user.points || user.points == 0) {
     try {
       member.roles.add(server.Roles.Unzealous)

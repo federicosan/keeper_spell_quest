@@ -98,9 +98,12 @@ class Server {
   }
   
   memberHasRole(member, roleId) {
+    if(!member){
+      return false
+    }
     if (typeof member === 'string' || member instanceof String){
-      let c = await this.db.collection("creatures").count({'target.id': member, 'type': FREEZE_TYPE})
-      return c > 0
+      let guild = this.client.guilds.cache.get(this.Id)
+      member = guild.members.cache.get(id)
     }
     return member.roles.cache.has(roleId)
   }
@@ -223,6 +226,7 @@ const spellQuestServer = new Server("970091626779254874",
     NAY: "976559312103174228"
   },
   {
+    Cultist: "1007389250787999845",
     TrueBeliever: "1001219339577479240",
     Unzealous: "997279025292644372",
     Abducted: "998705483277938739",

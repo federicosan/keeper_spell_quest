@@ -10,6 +10,6 @@ class Emoji {
 }
 
 exports.emoji = {
-  truebeliever: Emoji('truebeliever', '1001232962819469432'),
-  magic: Emoji('magic', '975922950551244871'),
+  truebeliever: new Emoji('truebeliever', '1001232962819469432'),
+  magic: new Emoji('magic', '975922950551244871'),
 }
