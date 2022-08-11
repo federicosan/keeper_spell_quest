@@ -4,8 +4,9 @@ const { StringMutex } = require('../utils/mutex')
 const HomecomingActive = false
 const HomecomingChannelId = '1004448290596724786'
 const UserMutex = new StringMutex()
-const MAX_MEMBERS = Math.floor(261 / 3)
-const MAX_POINTS = Math.floor(1247 / 3)
+let numCults = server.Cults.values().length
+const MAX_MEMBERS = Math.floor(304 / numCults)
+const MAX_POINTS = Math.floor(1064 / numCults)
 
 async function handleReaction(reaction, user) {
   if (!HomecomingActive) {
@@ -79,9 +80,9 @@ function shuffleArray(array) {
 }
 
 async function updateMessage() {
-  let txt = `AELIN, IT IS TIME TO COME HOME!
+  let txt = `AELIN, IT IS TIME TO BIND!
 
-bind to the cult you consider home. bring your friends.`
+bind to the cult you consider home. bring your friends. try to keep the cults balanced, or the ancients may balance them for you...`
   let message = await server.updateCachedMessage(HomecomingChannelId, 'homecoming', txt)
   await message.reactions.removeAll()
   setTimeout(() => {

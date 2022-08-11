@@ -216,6 +216,12 @@ async function handle(msg) {
   if (await bees.handleMessage(msg)) {
     return
   }
+  if (msg.channel.id == '1007018715474313216' && msg.type != "REPLY") {
+    console.log("reacting")
+    msg.react(server.Emojis.AYE)
+    msg.react(server.Emojis.NAY)
+    return
+  }
   if (msg.channel.id == '986712037633720390' && !server.admins.includes(msg.author.id) && msg.interaction == null) {
     msg.delete()
     return

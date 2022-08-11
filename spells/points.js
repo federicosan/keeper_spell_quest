@@ -6,7 +6,8 @@ const {
   RECRUIT_POINTS,
   FRAGMENTS_CULT_POINTS,
   FRAGMENTS_SABOTAGE_CULT_POINTS,
-  FRAGMENTS_SABOTEUR_CULT_POINTS
+  FRAGMENTS_SABOTEUR_CULT_POINTS,
+  RECRUIT_PYRAMID_SCHEME_COINS_C
 } = require('./constants.js')
 const { server } = require('../server.js')
 const { adventure } = require('./adventure')
@@ -34,6 +35,24 @@ const { getAllPastReferralsSet, getAllPastChantsCount } = require('../utils/user
 // calculate points
 // save -- totalPoints (points), balance (dust)
 // }
+
+async function getActiveMagicBoost(server, memberId) {
+  let _24hrago = new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
+  let boost = await server.db.collection("events").findOne({ timestamp: { $gte: _24hrago }, spell_type: MAGIC_BOOST_SPELL, 'metadata.target.id': memberId })
+  if (boost) {
+    return boost.metadata.spell.metadata.boost
+  }
+  return null
+}
+
+async function getActiveCultBoost(server, memberId) {
+  let _24hrago = new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
+  let boost = await server.db.collection("events").findOne({ timestamp: { $gte: _24hrago }, spell_type: CULT_POINT_BOOST_SPELL, 'metadata.target.id': memberId })
+  if (boost) {
+    return boost.metadata.spell.metadata.boost
+  }
+  return null
+}
 
 async function addPointsToUser(server, user, amount) {
   if (amount == 0) {
@@ -66,6 +85,17 @@ async function addPointsToUser(server, user, amount) {
   })
 }
 
+async function addReferralCoinsToUser(server, user) {
+  user.coins += RECRUIT_PYRAMID_SCHEME_COINS_C
+  let boost = await getActiveMagicBoost(server, user.discord.userid)
+  if (boost && boost > 0) {
+    user.coins += boost
+  }
+  await server.db.collection("users").updateOne({ 'address': user.address }, {
+    $set: { coins: user.coins }, $inc: { num_referral_chants: 1 }
+  })
+}
+
 async function handleRecruitment(server, user, targetUserId) {
   // check if user has points multiplier active
   try {
@@ -79,24 +109,6 @@ async function handleRecruitment(server, user, targetUserId) {
     return
   }
   await addPointsToUser(server, user, RECRUIT_POINTS)
-}
-
-async function getActiveMagicBoost(server, memberId) {
-  let _24hrago = new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
-  let boost = await server.db.collection("events").findOne({ timestamp: { $gte: _24hrago }, spell_type: MAGIC_BOOST_SPELL, 'metadata.target.id': memberId })
-  if (boost) {
-    return boost.metadata.spell.metadata.boost
-  }
-  return null
-}
-
-async function getActiveCultBoost(server, memberId) {
-  let _24hrago = new Date(new Date().getTime() - (24 * 60 * 60 * 1000))
-  let boost = await server.db.collection("events").findOne({ timestamp: { $gte: _24hrago }, spell_type: CULT_POINT_BOOST_SPELL, 'metadata.target.id': memberId })
-  if (boost) {
-    return boost.metadata.spell.metadata.boost
-  }
-  return null
 }
 
 async function handleChant(server, user) {
@@ -113,6 +125,14 @@ async function handleChant(server, user) {
   }
   user.num_chants += 1
   await addPointsToUser(server, user, CHANT_POINTS)
+  
+  // Pyramid scheme coin kickpagck
+  if (user.referred_by && user.referred_by !== "") {
+    let zealot = await server.db.collection("users").findOne({ "referral_key": user.referred_by })
+    if(zealot){
+      await addReferralCoinsToUser(server, zealot)
+    }
+  }
 }
 
 async function handleFragmentsChant(server, userId, cult, isSabotaged, saboteurs) {

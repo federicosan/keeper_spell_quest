@@ -1,12 +1,12 @@
 const { server } = require('../server')
 const { batch } = require('../batch')
 const { toHrMin } = require('../utils/time')
+const { IS_RESTARTING } = require('./state')
 
 const lastChapterEndTime = 1659556800 * 1000
 const chapterStartTime = 1659567600 * 1000 // july 27 1pm pst
 const nextChapaterEndTime = 1660161600 * 1000
 
-const IS_RESTARTING = false
 var HasCheckpointed = false
 
 async function update() {
@@ -51,7 +51,6 @@ exports.clock = {
   update: update
 }
 
-exports.IS_RESTARTING = IS_RESTARTING
 exports.LastChapterEndTime = lastChapterEndTime
 exports.ChapterStartTime = chapterStartTime
 exports.ChapterEndTime = nextChapaterEndTime

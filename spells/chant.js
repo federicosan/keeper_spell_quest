@@ -126,7 +126,7 @@ const WORDS_PLAIN_EXT = [
   "sathuus",
   "huamit",
   "bhim",
-  "ashman",
+  "ashmin",
   "culivanis",
   "col",
   "cor"

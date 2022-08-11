@@ -10,7 +10,7 @@ const { interactionHandler } = require('../interaction')
 const { objects } = require('../spells/objects')
 const { homecoming } = require('../game/homecoming')
 const { updateAllStats } = require('../stats')
-const { IS_RESTARTING } = require('../game/clock')
+const { IS_RESTARTING } = require('../game/state')
 
 var client = new Client({
   intents: [
@@ -26,6 +26,11 @@ server.setClient(client)
 function setClientTriggers() {
   client.on('messageCreate', async (msg) => {
     if (IS_RESTARTING && !server.admins.includes(msg.member.id)) {
+      if (msg.channel.id == '1007018715474313216' && msg.type != "REPLY") {
+        msg.react(server.Emojis.AYE)
+        msg.react(server.Emojis.NAY)
+        return
+      }
       return
     }
     message.handle(msg)

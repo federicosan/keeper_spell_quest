@@ -284,6 +284,28 @@ async function markWL() {
   }
 }
 
+async function markCultists() {
+  await server.loadDiscordUsers()
+  let users = await server.db.collection("users").find({ 'discord.userid': { $exists: true, $ne: '', $nin: server.admins }, 'cult_id':  {$exists: true, $ne: '' } })
+  users = await users.toArray()
+  console.log("num users:", users.length)
+  for (const user of users) {
+    if (!user.discord || !user.discord.userid || user.discord.userid == '') {
+      console.log('empty userid:', user)
+      continue
+    }
+
+    let member = server.getMember(user.discord.userid)
+    if (!member) {
+      console.log("no member found for user:", user.discord.userid)
+      continue
+    }
+    member.roles.add("1007389250787999845")
+    // let lastCult = server.Cults.userCult(member)
+    // member.roles.remove(lastCult.roleId)
+  }
+}
+
 class UserHistoryEntry {
   constructor(user, date) {
     this.created = date
@@ -444,6 +466,9 @@ async function cleanCultRoles() {
 async function prepForHomecoming() {
   let members = await server.loadDiscordUsers()
   // 1. mark all active players as `onboarded`, unset cult
+  if ( true ) {
+    await markCultists()
+  }
   if (false) {
     let n = 0
     members.each(async member => {
@@ -487,7 +512,7 @@ async function prepForHomecoming() {
     console.log("resetting cult scores...")
     await resetCultScores()
   }
-  if (true) {
+  if (false) {
     console.log("killing all creatures...")
     await killAllCreatures()
     console.log("killed all creatures...")

@@ -73,7 +73,7 @@ async function _conjure(server, member) {
   var spell;
   switch (spellType.value) {
     case CONJURE_ENEMY_SPELL:
-      spell = summon.allyGenerator.create(roles[1])
+      spell = summon.enemyGenerator.create(roles[1])
       break
     case CONJURE_ALLY_SPELL:
       spell = summon.allyGenerator.create(roles[1])
@@ -205,13 +205,13 @@ async function testConjure(spellType, roles) {
     roles = [Math.random(), Math.random()]
   }
   if (!spellType) {
-    let spellType = mariokart.selectSpell(roles[0], true).value
-    console.log("spellType:", spellType)
+    spellType = mariokart.selectSpell(roles[0], true)
+    console.log("spellType:", spellType.value)
   }
   var spell;
-  switch (spellType) {
+  switch (spellType.value) {
     case CONJURE_ENEMY_SPELL:
-      spell = summon.allyGenerator.create(roles[1])
+      spell = summon.enemyGenerator.create(roles[1])
       break
     case CONJURE_ALLY_SPELL:
       spell = summon.allyGenerator.create(roles[1])
@@ -234,7 +234,10 @@ async function testConjure(spellType, roles) {
     case BEES_SPELL:
       spell = bees.generator.create(roles[1])
       break
+    default:
+      throw new Error("no type input: " + spellType.value)
   }
+  console.log("spell:", spell)
   return { roles, spell }
 }
 

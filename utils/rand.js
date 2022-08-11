@@ -1,3 +1,4 @@
+// @dev you can experiment with this function in a fiddle here: https://jsfiddle.net/wsa9Lkf4/
 function randn_bm(min, max, skew, noise) {
     var u = 0, v = 0;
     while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)

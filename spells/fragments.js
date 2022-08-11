@@ -1,6 +1,7 @@
 const { server } = require('../server')
 const { WORDS_PLAIN_EXT } = require('./chant')
 const { points } = require('./points')
+const { emoji } = require('../utils/emoji')
 const {
   FRAGMENTS_CULT_POINTS,
   FRAGMENTS_SABOTAGE_CULT_POINTS,
@@ -197,6 +198,11 @@ async function handleMessage(message) {
   }
   if (message.channel.id != cult.id) {
     message.reply("you may only chant fragments in your cult channel.")
+    return
+  }
+  if(!server.memberHasRole(message.member, server.Roles.TrueBeliever) ) {
+    message.reply(`only true believers ${emoji.truebeliever} can chant the calmit sin. find one to perform the chant.`)
+    return
   }
   var _words = message.content.trim().replace(`${SUBMIT_CMD}`, "").tokenize()
   var { state, error, saboteurs } = await check(_words, cult.id)

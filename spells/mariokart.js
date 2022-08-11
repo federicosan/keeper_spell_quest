@@ -24,9 +24,9 @@ var SPELL_RARITIES = [
   { value: CONJURE_ALLY_SPELL, weight: 3 },
   { value: CONJURE_FREEZE_SPELL, weight: 3 },
   { value: CHEST_SPELL, weight: 6 },
-  { value: CULT_POINT_BOOST_SPELL, weight: 9 },
-  { value: MAGIC_BOOST_SPELL, weight: 7 },
-  { value: ATTACK_SPELL, weight: 25 }
+  { value: MAGIC_BOOST_SPELL, weight: 4 },
+  { value: CULT_POINT_BOOST_SPELL, weight: 6 },
+  { value: ATTACK_SPELL, weight: 30 }
 ]
 
 function _randomness(p, expected) {
@@ -49,15 +49,15 @@ function _randomness(p, expected) {
   return rand * (max - min) + min
 }
 
-const average = (array) => array.reduce((a, b) => a + b) / array.length
-
 async function rollDice(server, member, n) {
   let userCult = server.Cults.userCult(member)
   let cults = await getStats()
-  return await _roll(cults, userCult, n)
+  return await roll(cults, userCult, n)
 }
 
-async function _roll(cults, userCult, n, minChants = 30, doLog = true) {
+const POSITIVE_SKEW_SCALAR = 2 // was 5
+const OFFSET_SCALAR = 0.4
+function getRollInputs(cults, userCult, n, minChants = 30, doLog = true) {
   let sum = 0
   let max = 0
   let score = 0
@@ -70,7 +70,6 @@ async function _roll(cults, userCult, n, minChants = 30, doLog = true) {
       score = cult.score
     }
   }
-  console.log("max:", max)
   if (max < minChants) {
     var roles = []
     for (var i = 0; i < n; i++) {
@@ -89,14 +88,21 @@ async function _roll(cults, userCult, n, minChants = 30, doLog = true) {
     console.log("p:", p, "expected:", expected)
   }
   if (p < expected) {
-    // skew 0-1
-    skew = 1 - ((expected - Math.pow(p, 1.5)) / expected)
+    // trailing: skew 0-1
+    skew = 1 - ((expected - Math.pow(p, 1.1)) / expected)
   } else if (p > expected) {
-    // skew 1-6
-    skew = (Math.pow(p, 0.7) - expected) / (1 - expected) * 5 + 1
+    // leading: skew 1-6
+    // amount cult is leading over expectation / sum of other cult's expected scores
+    let ratio = (Math.pow(p, 0.9) - expected) / (1 - expected)
+    skew = ratio * POSITIVE_SKEW_SCALAR + 1
   }
-  let offset = ((avg - score) / avg) / 3
+  let offset = ((avg - score) / avg) / cults.length * OFFSET_SCALAR
   let noise = _randomness(p, expected)
+  return { p, expected, skew, offset, noise }
+}
+
+async function roll(cults, userCult, n, minChants = 30, doLog = true) {
+  var { p, expected, skew, offset, noise } = getRollInputs(cults, userCult, n, minChants, doLog)
   if (doLog) {
     console.log("cult:", userCult.name, "p:", p, "expected:", expected, "skew:", skew, "offset:", offset, "noise:", noise)
   }
@@ -104,10 +110,9 @@ async function _roll(cults, userCult, n, minChants = 30, doLog = true) {
   for (var i = 0; i < n; i++) {
     var out = 0
     if (i == 1) {
-      skew = Math.pow(skew, 0.3) // was 0.7
+      skew = Math.pow(skew, 0.3) // was 0.7 (lower power closer to 1)
       offset /= 2
-      // noise = Math.pow(noise, 0.5)
-      noise = Math.pow(noise, 0.9)
+      noise = Math.pow(noise, 0.9) // was 0.5 (lower power higher noise)
     }
     while (out <= 0 || out >= 1) {
       out = gaussian(0, 1, skew, noise) + offset
@@ -130,5 +135,6 @@ function selectSpell(roll, doLog = false) {
 exports.mariokart = {
   selectSpell: selectSpell,
   rollDice: rollDice,
-  roll: _roll,
+  getRollInputs: getRollInputs,
+  roll: roll,
 }

@@ -16,13 +16,9 @@ exports.ABDUCT_SPELL = "abduct_spell"
 exports.CHEST_SPELL = "chest_spell"
 exports.BEES_SPELL = "bees_spell"
 
-// Previous:
-// exports.SABOTAGE_POINTS = 2
-// exports.RECRUIT_CULT_POINTS = 7
-
-// Chapter 2
-exports.SABOTAGE_POINTS = 4
-exports.RECRUIT_CULT_POINTS = 13
+exports.SABOTAGE_POINTS = 2 // chapter 2-4: 4
+exports.RECRUIT_CULT_POINTS = 7 // chapter 2-4: 13
+exports.RECRUIT_PYRAMID_SCHEME_COINS_C = 3
 
 exports.FRAGMENTS_CULT_POINTS = 33 // N
 exports.FRAGMENTS_SABOTAGE_CULT_POINTS = -23 // -.7N

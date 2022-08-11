@@ -97,6 +97,14 @@ class Server {
     return this.Cults.userCult(member)
   }
   
+  memberHasRole(member, roleId) {
+    if (typeof member === 'string' || member instanceof String){
+      let c = await this.db.collection("creatures").count({'target.id': member, 'type': FREEZE_TYPE})
+      return c > 0
+    }
+    return member.roles.cache.has(roleId)
+  }
+  
   async userIsFrozen(user){
     if (typeof user === 'string' || user instanceof String){
       let c = await this.db.collection("creatures").count({'target.id': user, 'type': FREEZE_TYPE})
@@ -133,6 +141,23 @@ class Server {
 
 const spellQuestServer = new Server("970091626779254874",
   new Cults({
+    "972639993635938344": new Cult(
+      "culivanis",
+      "972639993635938344",
+      "ashmin col thalias",
+      "🥀",
+      "🥀",
+      // roleId
+      "1007386782767267960",
+      // statsChannel
+      "977052635603554324",
+      // proposalsChannel
+      "977642272348864572",
+      // emoji id
+      null,
+      // bonus points
+      0
+    ),
     "972639993635938344": new Cult(
       "minas kin",
       "972639993635938344",

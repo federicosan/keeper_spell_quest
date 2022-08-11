@@ -25,8 +25,8 @@ async function start(server, interaction) {
   let embed = new MessageEmbed()
     .setTitle("aelїn 1/3")
     .setColor("#FFFFE0")
-    .setDescription(`There exist 3 cults...
-${cults[0].discordEmoji}  ${cults[0].getName(server)}\n${cults[1].discordEmoji}  ${cults[1].getName(server)}\n${cults[2].discordEmoji}  ${cults[2].getName(server)}
+    .setDescription(`There exist ${cults.length} cults...
+${cults.map( cult => `${cult.discordEmoji} ${cult.getName(server)}`).join('\n')}
 
 Each cult is competing in a game of zealotry and sabotage to win [*spells* <:magic:975922950551244871>](https://spells.quest).
 🗝 **minting keys**  will be distributed to each cult in proportion to their score, and granted to members in a raffle  (lightly weighted by zealotry).
