@@ -2,6 +2,7 @@ const { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton } = req
 
 const { adventure } = require('../adventure')
 const { bees } = require('../bees')
+const { cache } = require('./cache')
 
 const {
   TARGET_PLAYER_TYPE,
@@ -16,57 +17,7 @@ class BeesSpell {
   async handleSelectFrom(server, interaction, castCache) {
     castCache[interaction.message.interaction.id] = this.spell.id
     var cult = server.Cults.userCult(interaction.member)
-    let cooldown = new Date(new Date().getTime() - (36 * 60 * 60 * 1000))
-    let users = await server.db.collection("users").aggregate([
-      {
-        "$match": {
-          "cult_id": { $ne: cult.id },
-          "discord.userid": { $exists: true, $ne: '', $nin: server.admins, $ne: interaction.member.id }
-        }
-      },
-      {
-        "$lookup": {
-          from: 'events',
-          let: { 'userid': '$discord.userid' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$spell_type", BEES_SPELL] },
-                    { $gte: ["$timestamp", cooldown] },
-                    { $eq: ["$$userid", "$metadata.target.id"] }
-                  ]
-                }
-              }
-            }
-          ],
-          as: 'bees'
-        }
-      },
-      {
-        "$match": {
-          $or: [
-            { bees: { $exists: false } },
-            { bees: null },
-            { bees: { $size: 0 } }
-          ]
-        }
-      },
-      {
-        $sort: {
-          points: -1,
-          num_chants: -1
-        }
-      },
-      {
-        $limit: 45
-      },
-      {
-        $sample: { size: 25 }
-      }
-    ])
-    users = await users.toArray()
+    let users = cache.CultBeesTargets[cult.id]
     var options = []
     for (const user of users) {
       var _cult = server.Cults.get(user.cult_id)

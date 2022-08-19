@@ -2,6 +2,7 @@ const { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton } = req
 
 const { adventure } = require('../adventure')
 const { creatures } = require('../creatures')
+const { cache } = require('./cache')
 
 const {
   ENEMY_TYPE,
@@ -40,88 +41,7 @@ class SummoningSpell {
     let targetType = ""
     if (this.spell.type == CONJURE_FREEZE_SPELL) {
       targetType = "cultist"
-
-      let users = await server.db.collection("users").aggregate([
-        {
-          "$match": {
-            "cult_id": { $ne: cult.id },
-            "discord.userid": { $exists: true, $ne: '', $nin: server.admins, $ne: interaction.member.id }
-          }
-        },
-        {
-          "$lookup": {
-            from: 'creatures',
-            let: { 'userid': '$discord.userid' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ["$target.id", "$$userid"] },
-                      { $gt: ["$healthRemaining", 0] },
-                      { $eq: ["$type", FREEZE_TYPE] }
-                    ]
-                  }
-                }
-              }
-            ],
-            as: 'chains'
-          }
-        },
-        {
-          "$match": {
-            $or: [
-              { chains: { $exists: false } },
-              { chains: null },
-              { chains: { $size: 0 } }
-            ]
-          }
-        },
-        {
-          "$lookup": {
-            from: 'events',
-            let: { 'userid': '$discord.userid' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ["$event", 'chains_broken'] },
-                      { $gte: ["$timestamp", new Date(new Date().getTime() - (12 * 60 * 60 * 1000))] },
-                      { $eq: ["$$userid", "$metadata.user"] }
-                    ]
-                  }
-                }
-              }
-            ],
-            as: 'recent_chains_broken'
-          }
-        },
-        {
-          "$match": {
-            $or: [
-              { recent_chains_broken: { $exists: false } },
-              { recent_chains_broken: null },
-              { recent_chains_broken: { $size: 0 } }
-            ]
-          }
-        },
-        {
-          $sort: {
-            points: -1,
-            num_chants: -1
-          }
-        },
-        {
-          $limit: 40
-        },
-        {
-          $sample: { size: 25 }
-        }
-      ])
-      // let users = await server.db.collection("users").find({ 'discord.userid': { $exists: true, $ne: '' }, 'cult_id': { $ne: cult.id } }).sort({ 'points': -1, 'num_chants': -1 }).limit(25)
-
-      users = await users.toArray()
+      let users = cache.CultFreezeTargets[cult.id]
       for (const user of users) {
         var _cult = server.Cults.get(user.cult_id)
         if (!_cult) {

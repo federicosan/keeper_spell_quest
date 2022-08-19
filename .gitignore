@@ -4,7 +4,8 @@
 # local env files
 .env
 .env.*
-last_stats_message.json
+last_stats_messages.json
+.breakpoints
 
 # debug
 npm-debug.log*
