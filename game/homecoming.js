@@ -5,8 +5,39 @@ const HomecomingActive = false
 const HomecomingChannelId = '1004448290596724786'
 const UserMutex = new StringMutex()
 let numCults = server.Cults.values().length
-const MAX_MEMBERS = Math.floor(304 / numCults)
-const MAX_POINTS = Math.floor(1064 / numCults)
+const MAX_MEMBERS = Math.floor(280 / numCults)
+const MAX_POINTS = Math.floor(1263 / numCults)
+
+async function assignCult(userId, cult) {
+  if (!cult) {
+    console.log("no cult")
+    return
+  }
+  console.log("getting user mutex")
+  var release = await UserMutex.acquire(userId)
+  console.log("got user mutex")
+  try {
+    let member = server.getMember(userId)
+    var _cult = server.memberCult(member)
+    if (_cult) {
+      // remove them from old cult
+      if (cult.id != _cult.id) {
+        member.roles.remove(_cult.roleId)
+        await server.db.collection("users").update({ 'discord.userid': userId }, { $set: { cult_id: '' } })
+      } else {
+        return true
+      }
+    }
+    if (cult) {
+      // assign user to cult
+      console.log("adding role:", cult.roleId, "to user:", userId)
+      await member.roles.add(cult.roleId)
+      await server.db.collection("users").update({ 'discord.userid': userId }, { $set: { cult_id: cult.id } })
+    }
+  } finally {
+    release()
+  }
+}
 
 async function handleReaction(reaction, user) {
   if (!HomecomingActive) {
@@ -107,5 +138,6 @@ async function init() {
 exports.homecoming = {
   init: init,
   addReaction: handleReaction,
-  updateMessage: updateMessage
+  updateMessage: updateMessage,
+  assignCult: assignCult
 }

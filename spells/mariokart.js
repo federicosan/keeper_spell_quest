@@ -19,14 +19,14 @@ const { getStats } = require('../stats')
 const { gaussian, weightedRandomSelect, adjustRarities, normalizeWeights, RandGenerator, hashString } = require('../utils/rand')
 
 var SPELL_RARITIES = [
-  { value: BEES_SPELL, weight: 3 },
-  { value: CONJURE_ENEMY_SPELL, weight: 3 },
-  { value: CONJURE_ALLY_SPELL, weight: 3 },
+  { value: BEES_SPELL, weight: 2 },
+  { value: CONJURE_ENEMY_SPELL, weight: 4 },
+  { value: CONJURE_ALLY_SPELL, weight: 4 },
   { value: CONJURE_FREEZE_SPELL, weight: 3 },
-  { value: CHEST_SPELL, weight: 6 },
+  { value: CHEST_SPELL, weight: 5 },
   { value: MAGIC_BOOST_SPELL, weight: 4 },
   { value: CULT_POINT_BOOST_SPELL, weight: 6 },
-  { value: ATTACK_SPELL, weight: 30 }
+  { value: ATTACK_SPELL, weight: 25 }
 ]
 
 function _randomness(p, expected) {
@@ -71,6 +71,7 @@ function getRollInputs(cults, userCult, n, minChants = 30, doLog = true) {
     }
   }
   if (max < minChants) {
+    return {max: max}
     var roles = []
     for (var i = 0; i < n; i++) {
       roles.push(gaussian(0, 1, 1, 0.5))
@@ -98,15 +99,21 @@ function getRollInputs(cults, userCult, n, minChants = 30, doLog = true) {
   }
   let offset = ((avg - score) / avg) / cults.length * OFFSET_SCALAR
   let noise = _randomness(p, expected)
-  return { p, expected, skew, offset, noise }
+  return { p, expected, skew, offset, noise, max }
 }
 
 async function roll(cults, userCult, n, minChants = 30, doLog = true) {
-  var { p, expected, skew, offset, noise } = getRollInputs(cults, userCult, n, minChants, doLog)
+  var { p, expected, skew, offset, noise, max } = getRollInputs(cults, userCult, n, minChants, doLog)
   if (doLog) {
     console.log("cult:", userCult.name, "p:", p, "expected:", expected, "skew:", skew, "offset:", offset, "noise:", noise)
   }
   var roles = []
+  if (max < minChants) {
+    for (var i = 0; i < n; i++) {
+      roles.push(gaussian(0, 1, 1, 0.5))
+    }
+    return roles
+  }
   for (var i = 0; i < n; i++) {
     var out = 0
     if (i == 1) {

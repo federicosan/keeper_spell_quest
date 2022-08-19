@@ -3,7 +3,7 @@ const { Cult, Cults } = require('./types/cult')
 const { FREEZER_TYPE } = require('./spells/constants')
 
 class Server {
-  constructor(id, cults, testCult, welcomeChannel, statsChannel, beginChannel, altarChannel, channels, emojis, roles){
+  constructor(id, cults, testCult, welcomeChannel, statsChannel, beginChannel, altarChannel, channels, emojis, roles) {
     this.Id = id
     this.Cults = cults
     this.TestCult = testCult
@@ -25,7 +25,7 @@ class Server {
   setDatabase(database) {
     this.database = database
   }
-  
+
   getChannel(id) {
     return this.client.channels.cache.get(id)
   }
@@ -35,27 +35,27 @@ class Server {
     return channel.name
   }
 
-  async getNextSequenceValue(sequenceName){
-     var sequenceDocument = await this.db.collection("counters").findOneAndUpdate(
-        {id: sequenceName },
-        {$inc:{sequence_value:1}}
-     );
-     return sequenceDocument.value.sequence_value.toString();
+  async getNextSequenceValue(sequenceName) {
+    var sequenceDocument = await this.db.collection("counters").findOneAndUpdate(
+      { id: sequenceName },
+      { $inc: { sequence_value: 1 } }
+    );
+    return sequenceDocument.value.sequence_value.toString();
   }
 
-  async getSequenceValue(sequenceName){
-     var sequenceDocument = await this.db.collection("counters").findOne({
-        id: sequenceName
-     });
-     if(!sequenceDocument){
-       return null
-     }
-     return sequenceDocument.sequence_value.toString();
+  async getSequenceValue(sequenceName) {
+    var sequenceDocument = await this.db.collection("counters").findOne({
+      id: sequenceName
+    });
+    if (!sequenceDocument) {
+      return null
+    }
+    return sequenceDocument.sequence_value.toString();
   }
 
   async loadUser(id) {
-    let user = await this.database.get(`user:${id}`, {raw: false})
-    if(user == null){
+    let user = await this.database.get(`user:${id}`, { raw: false })
+    if (user == null) {
       user = new User(id, 0)
     } else {
       user = JSON.parse(user)
@@ -63,7 +63,7 @@ class Server {
     }
     return user
   }
-  
+
   async loadDiscordUsers() {
     var guild = this.client.guilds.cache.get(this.Id);
     let members = await guild.members.fetch()
@@ -71,7 +71,7 @@ class Server {
   }
 
   async getDBUser(id) {
-    let user = await this.db.collection("users").findOne({'discord.userid': id})
+    let user = await this.db.collection("users").findOne({ 'discord.userid': id })
     return user
   }
 
@@ -87,50 +87,50 @@ class Server {
   userIdCult(id) {
     let guild = this.client.guilds.cache.get(this.Id)
     let member = guild.members.cache.get(id)
-    if(!member){
+    if (!member) {
       return null
     }
     return this.Cults.userCult(member)
   }
-  
+
   memberCult(member) {
     return this.Cults.userCult(member)
   }
-  
+
   memberHasRole(member, roleId) {
-    if(!member){
+    if (!member) {
       return false
     }
-    if (typeof member === 'string' || member instanceof String){
+    if (typeof member === 'string' || member instanceof String) {
       let guild = this.client.guilds.cache.get(this.Id)
       member = guild.members.cache.get(id)
     }
     return member.roles.cache.has(roleId)
   }
-  
-  async userIsFrozen(user){
-    if (typeof user === 'string' || user instanceof String){
-      let c = await this.db.collection("creatures").count({'target.id': user, 'type': FREEZE_TYPE})
+
+  async userIsFrozen(user) {
+    if (typeof user === 'string' || user instanceof String) {
+      let c = await this.db.collection("creatures").count({ 'target.id': user, 'type': FREEZE_TYPE })
       return c > 0
     }
     return user.roles.cache.has(this.Roles.Abducted)
   }
-  
-  async getCachedMessage(channelId, key){
-    let messageId = await this.database.get(`${key}:${channelId}`, {raw: false})
-    if(!messageId){
+
+  async getCachedMessage(channelId, key) {
+    let messageId = await this.database.get(`${key}:${channelId}`, { raw: false })
+    if (!messageId) {
       return null
     }
     let channel = this.client.channels.cache.get(channelId)
     return await channel.messages.fetch(messageId)
   }
-  
+
   async updateCachedMessage(channelId, key, value) {
-    let messageId = await this.database.get(`${key}:${channelId}`, {raw: false})
+    let messageId = await this.database.get(`${key}:${channelId}`, { raw: false })
     let channel = this.client.channels.cache.get(channelId)
-    if(messageId){
+    if (messageId) {
       let msg = await channel.messages.fetch(messageId)
-      if(msg) {
+      if (msg) {
         msg.edit(value)
         return msg
       }
@@ -139,17 +139,17 @@ class Server {
     await this.database.set(`${key}:${channelId}`, message.id)
     return message
   }
-  
+
 }
 
 const spellQuestServer = new Server("970091626779254874",
   new Cults({
-    "972639993635938344": new Cult(
+    "1007387236343492638": new Cult(
       "culivanis",
-      "972639993635938344",
+      "1007387236343492638",
       "ashmin col thalias",
-      "🥀",
-      "🥀",
+      "🕯",
+      "🕯",
       // roleId
       "1007386782767267960",
       // statsChannel
@@ -188,21 +188,21 @@ const spellQuestServer = new Server("970091626779254874",
       null,
       // bonus points
       0
-    ),
-    "973532570266533898": new Cult(
-      "vos silan",
-      "973532570266533898",
-      "avari noc brith",
-      "🪞",
-      "🪞",
-      "973810144758616145",
-      "977052689768804382",
-      "977642330750353479",
-      // emoji id
-      null,
-      // bonus points
-      0
     )
+    // "973532570266533898": new Cult(
+    //   "vos silan",
+    //   "973532570266533898",
+    //   "avari noc brith",
+    //   "🪞",
+    //   "🪞",
+    //   "973810144758616145",
+    //   "977052689768804382",
+    //   "977642330750353479",
+    //   // emoji id
+    //   null,
+    //   // bonus points
+    //   0
+    // )
   }),
   new Cult(
     "Coven of Parsimony",
@@ -260,11 +260,11 @@ const testServer = {
   Emojis: {
     AYE: "976559748143001642",
     NAY: "976559312103174228"
-  }, 
+  },
   Roles: {
     Unzealous: "997279025292644372"
   }
-} 
+}
 
 exports.testServer = testServer
-exports.server= spellQuestServer 
+exports.server = spellQuestServer

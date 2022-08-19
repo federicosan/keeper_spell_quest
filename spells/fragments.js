@@ -25,10 +25,10 @@ const SUBMIT_CMD = "calmit sin" // listen with without/nothing (idiom, meaning l
 
 var words = WORDS_PLAIN_EXT
 
-String.prototype.tokenize = function(toLowerCase = true){
+String.prototype.tokenize = function(toLowerCase = true) {
   return this.split(" ").filter(n => {
-    if(n != ''){
-      if(toLowerCase){
+    if (n != '') {
+      if (toLowerCase) {
         return n.trim().toLowerCase()
       }
       return n.trim()
@@ -37,17 +37,17 @@ String.prototype.tokenize = function(toLowerCase = true){
   })
 }
 
-function hasChantWordsOnly(str){
+function hasChantWordsOnly(str) {
   let tokens = str.tokenize()
-  for(const token of tokens){
-    if(!words.includes(token)){
+  for (const token of tokens) {
+    if (!words.includes(token)) {
       return false
     }
   }
   return true
 }
 
-async function currentPieces(seed){
+async function currentPieces(seed) {
   var usedWords = new Set()
   if (!seed) {
     seed = Math.floor((Date.now() - 4 * 60 * 60 * 1000) / EPOCH_PERIOD)  // await server.getSequenceValue( "pieces")
@@ -200,7 +200,7 @@ async function handleMessage(message) {
     message.reply("you may only chant fragments in your cult channel.")
     return
   }
-  if(!server.memberHasRole(message.member, server.Roles.TrueBeliever) ) {
+  if (!server.memberHasRole(message.member, server.Roles.TrueBeliever)) {
     message.reply(`only true believers ${emoji.truebeliever} can chant the calmit sin. find one to perform the chant.`)
     return
   }
@@ -215,9 +215,13 @@ async function handleMessage(message) {
       message.reply(`aeilin, your fragments are pure, this chant is accepted! +𐂥${FRAGMENTS_CULT_POINTS}`)
       return
     case "sabotage":
-      await points.handleFragmentsChant(server, message.member.id, cult, true, saboteurs)
+      try {
+        await points.handleFragmentsChant(server, message.member.id, cult, true, saboteurs)
+      } catch (err) {
+        console.log("points.handleFragmentsChant sabotage error:", error)
+      }
       let saboteurCultNames = saboteurs.map(id => server.Cults.get(id).getName(server))
-      message.reply(`SABOTAGE! -𐂥${FRAGMENTS_SABOTAGE_CULT_POINTS} to ${cult.getName(server)}, +𐂥${FRAGMENTS_SABOTEUR_CULT_POINTS} to ${saboteurCultNames.join(", ")}`)
+      message.channel.send(`SABOTAGE! ${message.member}'s fragments are impure! -𐂥${FRAGMENTS_SABOTAGE_CULT_POINTS} to ${cult.getName(server)}, +𐂥${FRAGMENTS_SABOTEUR_CULT_POINTS} to ${saboteurCultNames.join(", ")}`)
       return
   }
   message.reply("error? talk to @hypervisor...")
@@ -237,12 +241,12 @@ async function test() {
   }
   var piece = await userPiece(uid, cult)
   console.log("piece:", piece)
-  
+
   let content = "calmit sin  rid bhim brith barad fawai tin"
   let _words = content.trim().replace(`${SUBMIT_CMD} `, "").tokenize()
   let resp = await check(_words, '972639993635938344')
   console.log("resp:", resp, "should be valid, is valid:", resp.state == 'valid')
-  
+
   // 784 816 1133 2118 2776 2951 3100 3209
   resp = await check("er avari tin ego vra orodruin u y'los".split(" "), cult.id, _seed)
   console.log("resp:", resp, "should be valid, is valid:", resp.state == 'valid')

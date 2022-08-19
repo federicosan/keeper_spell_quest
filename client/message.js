@@ -11,6 +11,7 @@ const { bees } = require('../spells/bees')
 const { updateAllStats, leaderboard } = require('../stats')
 const { FREEZE_TYPE } = require('../spells/constants')
 const { fragments } = require('../spells/fragments')
+const { homecoming } = require('../game/homecoming')
 
 const EPOCH_PERIOD = 6 * 60 * 60 * 1000
 
@@ -194,6 +195,22 @@ async function sendMsg(channelId, content) {
   channel.send(content)
 }
 
+async function assignCult(userId, cultId) {
+  if (userId == '974842656372953118') {
+    return false
+  }
+  try {
+    let cult = server.Cults.get(cultId)
+    if (!cult) {
+      console.log("invalid cult")
+      return
+    }
+    await homecoming.assignCult(userId, cult)
+  } catch (err) {
+    console.log("assign cult error:", err)
+  }
+}
+
 async function handle(msg) {
   if (msg.author.bot) {
     return
@@ -292,6 +309,17 @@ async function handle(msg) {
       let args = body.split("::")
       if (args.length == 3) {
         replyToMsg(args[0], args[1], args[2])
+      }
+      return
+    }
+    if (msg.content.startsWith("!assignCult")) {
+      let body = msg.content.replaceAll("!assignCult ", "")
+      body = body.replaceAll('<', '').replaceAll('>', '').replaceAll('@', '').replaceAll('&', '')
+      console.log("body:", body)
+      let args = body.split(" ")
+      console.log("args:", args)
+      if (args.length == 2) {
+        assignCult(args[0], args[1])
       }
       return
     }

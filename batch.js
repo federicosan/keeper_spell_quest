@@ -139,7 +139,11 @@ class BinPackCults {
   constructor() {
     this.min = 0
     let cults = server.Cults.values()
-    this.cults = [new BinPackCult(cults[0].id), new BinPackCult(cults[1].id), new BinPackCult(cults[2].id)]
+    this.cults = []
+    for (const _cult of cults) {
+      this.cults.push(new BinPackCult(_cult.id))
+    }
+    console.log("bin pack cults:", this.cults)
   }
 
   insert(user) {
@@ -163,6 +167,7 @@ class BinPackCults {
         }
       }
     }
+    console.log("this.min:", this.min)
     this.cults[this.min].addUser(user)
   }
 
@@ -225,6 +230,7 @@ async function shuffleUsersKeepCults() {
       cults.insertToCult(user, user.cult_id)
       n++
     } else {
+      console.log("unassigned user:", user)
       cults.insert(user)
     }
   }
@@ -286,7 +292,7 @@ async function markWL() {
 
 async function markCultists() {
   await server.loadDiscordUsers()
-  let users = await server.db.collection("users").find({ 'discord.userid': { $exists: true, $ne: '', $nin: server.admins }, 'cult_id':  {$exists: true, $ne: '' } })
+  let users = await server.db.collection("users").find({ 'discord.userid': { $exists: true, $ne: '', $nin: server.admins }, 'cult_id': { $exists: true, $ne: '' } })
   users = await users.toArray()
   console.log("num users:", users.length)
   for (const user of users) {
@@ -383,7 +389,7 @@ async function resetUserPointsAndMagic(date) {
     if (c && c > 0) {
       user.coins += c * 15
     }
-    await server.db.collection("users").updateOne({ 'discord.userid': user.discord.userid }, { $set: { points: 0, num_chants: 0, referrals: [], coins: user.coins, history: user.history } })
+    await server.db.collection("users").updateOne({ 'discord.userid': user.discord.userid }, { $set: { points: 0, num_chants: 0, referrals: [], coins: user.coins, history: user.history, referral_target_cult_id: '' } })
   }
   // for(const user of users){
   //   if(!user.discord || !user.discord.userid || user.discord.userid == ''){
@@ -467,7 +473,7 @@ async function cleanCultRoles() {
 async function prepForHomecoming() {
   let members = await server.loadDiscordUsers()
   // 1. mark all active players as `onboarded`, unset cult
-  if ( true ) {
+  if (false) {
     await markCultists()
   }
   if (false) {
@@ -502,6 +508,7 @@ async function prepForHomecoming() {
   if (false) {
     members.each(async member => {
       for (const [key, cult] of server.Cults.entries()) {
+        console.log("cult role id:", cult.roleId)
         if (member.roles.cache.has(cult.roleId)) {
           console.log("unbound cultist:", member.id)
           member.roles.remove(cult.roleId)
@@ -509,11 +516,11 @@ async function prepForHomecoming() {
       }
     })
   }
-  if (false) {
+  if (true) {
     console.log("resetting cult scores...")
     await resetCultScores()
   }
-  if (false) {
+  if (true) {
     console.log("killing all creatures...")
     await killAllCreatures()
     console.log("killed all creatures...")
@@ -559,7 +566,7 @@ async function ensureUserCultRoleAssigned(date) {
 }
 
 async function migrate() {
-  let date = new Date(1659556800 * 1000)
+  let date = new Date("2022-08-19T04:01:02.825Z")
   console.log("date:", date)
   // await checkpoint(date)
 
@@ -568,6 +575,7 @@ async function migrate() {
   // assign new cults
   if (false) {
     let shuffledCults = await shuffleUsersKeepCults()
+    return
     let cults = server.Cults.values()
     for (var i = 0; i < shuffledCults.cults.length; i++) {
       let shuffledCult = shuffledCults.cults[i]

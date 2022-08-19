@@ -3,9 +3,9 @@ const { batch } = require('../batch')
 const { toHrMin } = require('../utils/time')
 const { IS_RESTARTING } = require('./state')
 
-const lastChapterEndTime = 1659556800 * 1000
-const chapterStartTime = 1659567600 * 1000 // july 27 1pm pst
-const nextChapaterEndTime = 1660161600 * 1000
+const lastChapterEndTime = 1660161600 * 1000
+const chapterStartTime = 1660935600 * 1000 // aug 19 12pm pst
+const nextChapaterEndTime = 1661454000 * 1000 // aug 25 12pm pst
 
 var HasCheckpointed = false
 

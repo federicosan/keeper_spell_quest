@@ -92,19 +92,19 @@ client.once('ready', async () => {
   await server.Cults.loadEmojis(database)
   await stats.init()
   runPurgatory(server)
-  
+
   clock.run()
   initMessageCache()
   for (const cult of server.Cults.values()) {
     console.log("cult:", cult.name, "num-members:", cult.countMembers(server))
   }
   // db required vvv
-  // await batch.prepForHomecoming()
-  interactionHandler.init(server)
-  await spells_game.init(server)
-  await homecoming.init()
-  runReferralsCounter(server)
-  spells_game.run(server)
+  // await batch.migrate()
+  // interactionHandler.init(server)
+  // await spells_game.init(server)
+  // await homecoming.init()
+  // runReferralsCounter(server)
+  // spells_game.run(server)
 });
 
 console.log("connecting to mongo...")
@@ -112,7 +112,7 @@ mongo.connect(async err => {
   if (err) {
     console.log("mgo connect err:", err)
   }
-  console.log("logging in") 
+  console.log("logging in")
   client.login(process.env.TOKEN);
   return;
 })
