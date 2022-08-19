@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
-const { server } = require('./server')
-const { IS_RESTARTING } = require('./game/state')
+const { server } = require('../server')
+const { IS_RESTARTING } = require('./state')
 
 class CultStats {
   constructor(cult, name, chants, population) {

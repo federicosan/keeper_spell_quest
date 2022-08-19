@@ -18,7 +18,21 @@
 //   }
 // }
 
-
+// async function fixBees() {
+//   console.log("fix bees")
+//   let events = await server.db.collection("events").find({ spell_type: 'bees_spell' })
+//   console.log("fix bees events:", events)
+//   await events.map(async event => {
+//     let durationHrs = Math.max(6, event.metadata.spell.power * 16 + Math.random() * event.metadata.spell.power * 4 + Math.random() * 2)
+//     let endTime = new Date(event.timestamp.getTime() + Math.round(durationHrs * 60 * 60 * 1000))
+//     await server.db.collection("events").update({ 'metadata.end': event.metadata.end }, {
+//       $set: {
+//         'metadata.end': endTime
+//       }
+//     })
+//     console.log("fixed 1 bees spell event")
+//   }).toArray()
+// }
 
 // async function initNumChants(server){
 //   console.log("initializing num chants")

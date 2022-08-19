@@ -1,7 +1,7 @@
-const { server } = require('./server')
+const { server } = require('../server')
 const { stats } = require('./stats')
 const createCsvWriter = require('csv-writer').createObjectCsvWriter
-const { gaussian, weightedRandomSelect, adjustRarities, normalizeWeights, RandGenerator, hashString } = require('./utils/rand')
+const { gaussian, weightedRandomSelect, adjustRarities, normalizeWeights, RandGenerator, hashString } = require('../utils/rand')
 const csv = require('csv-parser')
 const fs = require('fs')
 // const { Creature } = require('./spells/creatures')
@@ -472,10 +472,11 @@ async function cleanCultRoles() {
 
 async function prepForHomecoming() {
   let members = await server.loadDiscordUsers()
-  // 1. mark all active players as `onboarded`, unset cult
-  if (false) {
+  if ( false ) {
     await markCultists()
   }
+  
+  // 1. mark all active players as `onboarded`, unset cult
   if (false) {
     let n = 0
     members.each(async member => {
@@ -504,6 +505,7 @@ async function prepForHomecoming() {
       }
     }).toArray()
   }
+  
   // 2. remove all cult roles
   if (false) {
     members.each(async member => {

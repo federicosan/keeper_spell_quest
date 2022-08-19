@@ -1,11 +1,11 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
-const { points } = require('./spells/points')
+const { points } = require('../spells/points')
 const {
   RECRUIT_CULT_POINTS,
   COINS_C,
   CHANT_POINTS,
   RECRUIT_POINTS
-} = require('./spells/constants.js')
+} = require('../spells/constants.js')
 
 
 // explain 3 cults competing for spells

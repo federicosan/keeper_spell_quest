@@ -1,5 +1,3 @@
-const { begin } = require('./begin')
-
 const ACTIVE_STATE = "active"
 const ARCHIVED_STATE = "archived"
 
@@ -149,8 +147,6 @@ class Proposal {
       case "rename":
         // rename cult
         await cult.rename(server, this.data['name'].toLowerCase(), this.data['emoji'])
-        // edit begin message
-        // await begin.updateMessage(server)
         console.log("done renaming cult")
         return true
       // case "change emoji":

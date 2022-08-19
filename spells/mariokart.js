@@ -15,7 +15,7 @@ const {
   CHEST_SPELL,
   BEES_SPELL
 } = require('./constants.js')
-const { getStats } = require('../stats')
+const { getStats } = require('../game/stats')
 const { gaussian, weightedRandomSelect, adjustRarities, normalizeWeights, RandGenerator, hashString } = require('../utils/rand')
 
 var SPELL_RARITIES = [

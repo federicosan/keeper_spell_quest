@@ -1,7 +1,7 @@
 const { progress } = require('../utils/progress')
 const { SetChannelPermissions, CULTIST_READ_ONLY, CULTIST_READ_WRITE } = require('../utils/permissions')
 const { MessageEmbed, Permissions } = require('discord.js');
-const { updateAllStats } = require('../stats.js')
+const { updateAllStats } = require('../game/stats.js')
 const { ENEMY_TYPE, ALLY_TYPE, FREEZE_TYPE, TARGET_CULT_TYPE, TARGET_PLAYER_TYPE } = require('./constants.js')
 const { adventure } = require('./adventure')
 

@@ -2,14 +2,14 @@ const { SlashCommandBuilder, ContextMenuCommandBuilder } = require('@discordjs/b
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
 const { MessageActionRow, MessageSelectMenu, MessageButton } = require('discord.js')
-const { points } = require('./spells/points')
-const { fragments } = require('./spells/fragments')
-const { enter } = require('./enter')
-const { spells } = require('./spells/spells')
-const { cast } = require('./spells/cast')
-const { drop } = require('./spells/drop')
-const { handleSabotage } = require('./recruit')
-const { toHrMin } = require('./utils/time')
+const { points } = require('../spells/points')
+const { fragments } = require('../spells/fragments')
+const { enter } = require('../discord/enter')
+const { spells } = require('../spells/spells')
+const { cast } = require('../spells/cast')
+const { drop } = require('../spells/drop')
+const { handleSabotage } = require('../game/recruit')
+const { toHrMin } = require('../utils/time')
 
 const clientId = '974842656372953118';
 

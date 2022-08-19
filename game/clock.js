@@ -1,5 +1,5 @@
 const { server } = require('../server')
-const { batch } = require('../batch')
+const { batch } = require('./batch')
 const { toHrMin } = require('../utils/time')
 const { IS_RESTARTING } = require('./state')
 

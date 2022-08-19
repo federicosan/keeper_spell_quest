@@ -1,9 +1,9 @@
-const { interactionHandler } = require('./interaction')
+const { interactionHandler } = require('./client/interaction')
 const { client } = require('./client/client')
-const { stats } = require('./stats')
-const { vote } = require('./vote')
-const { runReferralsCounter, runPurgatory } = require('./recruit')
-const { batch } = require('./batch')
+const { stats } = require('./game/stats')
+const { vote } = require('./game/vote')
+const { runReferralsCounter, runPurgatory } = require('./game/recruit')
+const { batch } = require('./game/batch')
 const { server } = require('./server')
 const Database = require("@replit/database");
 const { MongoClient } = require('mongodb')
@@ -30,7 +30,8 @@ client.once('ready', async () => {
     if(err){
       console.log("mgo connect err:", err)
     }
-    batch.migrate()
+    batch.prepForHomecoming(server)
+    // batch.migrate()
     return;
   })
 });

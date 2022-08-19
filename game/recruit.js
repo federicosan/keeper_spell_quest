@@ -1,10 +1,10 @@
 const { updateAllStats } = require('./stats')
-const { points } = require('./spells/points')
-const { SABOTAGE_POINTS, RECRUIT_CULT_POINTS } = require('./spells/constants')
-const { adventure } = require('./spells/adventure')
-const { LastChapterEndTime, ChapterStartTime } = require('./game/clock')
-const { StringMutex } = require('./utils/mutex')
-const { getAllPastReferralsSet } = require('./utils/user')
+const { points } = require('../spells/points')
+const { SABOTAGE_POINTS, RECRUIT_CULT_POINTS } = require('../spells/constants')
+const { adventure } = require('../spells/adventure')
+const { LastChapterEndTime, ChapterStartTime } = require('./clock')
+const { StringMutex } = require('../utils/mutex')
+const { getAllPastReferralsSet } = require('../utils/user')
 
 // async function accurateCalculateCultReferrals(cult, server) {
 //   // get all users with cult

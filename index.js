@@ -1,10 +1,9 @@
-const { interactionHandler } = require('./interaction')
+const { interactionHandler } = require('./client/interaction')
 const { client, setClientTriggers } = require('./client/client')
-const { stats } = require('./stats')
-const { vote } = require('./vote')
-const { handleJoin } = require('./recruit')
-const { runReferralsCounter, runPurgatory } = require('./recruit')
-const { batch } = require('./batch')
+const { stats } = require('./game/stats')
+const { vote } = require('./game/vote')
+const { runReferralsCounter, runPurgatory } = require('./game/recruit')
+const { batch } = require('./game/batch')
 const { server } = require('./server')
 const Database = require("@replit/database");
 const { MongoClient } = require('mongodb')
@@ -20,16 +19,13 @@ var exec = require('child_process').exec
 const { spells_game } = require('./spells/controller')
 const { clock } = require('./game/clock')
 const { homecoming } = require('./game/homecoming')
-// const { liveTesting } = require('./tests/live');
-// const { Stats } = require('fs');
+const { extensions } = require('./extensions/extensions')
 
 const uri = process.env.MONGO_URI
 
 let mongo = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 server.setDatabase(database)
 server.db = mongo.db("general")
-
-
 
 async function initMessageCache() {
   var guild = await client.guilds.cache.get(server.Id)
@@ -65,22 +61,6 @@ async function initMessageCache() {
   }
 }
 
-// async function fixBees() {
-//   console.log("fix bees")
-//   let events = await server.db.collection("events").find({ spell_type: 'bees_spell' })
-//   console.log("fix bees events:", events)
-//   await events.map(async event => {
-//     let durationHrs = Math.max(6, event.metadata.spell.power * 16 + Math.random() * event.metadata.spell.power * 4 + Math.random() * 2)
-//     let endTime = new Date(event.timestamp.getTime() + Math.round(durationHrs * 60 * 60 * 1000))
-//     await server.db.collection("events").update({ 'metadata.end': event.metadata.end }, {
-//       $set: {
-//         'metadata.end': endTime
-//       }
-//     })
-//     console.log("fixed 1 bees spell event")
-//   }).toArray()
-// }
-
 setClientTriggers()
 var loggedIn = false
 
@@ -98,13 +78,15 @@ client.once('ready', async () => {
   for (const cult of server.Cults.values()) {
     console.log("cult:", cult.name, "num-members:", cult.countMembers(server))
   }
-  // db required vvv
+  
   // await batch.migrate()
-  // interactionHandler.init(server)
-  // await spells_game.init(server)
-  // await homecoming.init()
-  // runReferralsCounter(server)
-  // spells_game.run(server)
+  interactionHandler.init(server)
+  await spells_game.init(server)
+  await homecoming.init()
+  await extensions.init()
+  runReferralsCounter(server)
+  spells_game.run(server)
+  extensions.run()
 });
 
 console.log("connecting to mongo...")
@@ -113,60 +95,11 @@ mongo.connect(async err => {
     console.log("mgo connect err:", err)
   }
   console.log("logging in")
-  client.login(process.env.TOKEN);
-  return;
+  client.login(process.env.TOKEN)
+  return
 })
 
-// throw new Error("no")
-
-// var loggedIn = false
-// client.once('ready', async () => {
-//   console.log('Ready!');
-//   loggedIn = true
-//   await vote.init(server)
-//   await server.Cults.loadEmojis(database)
-//   await server.loadDiscordUsers()
-//   await stats.init()
-//   // runPurgatory(server)
-//   mongo.connect(async err => {
-//     if (err) {
-//       console.log("mgo connect err:", err)
-//     }
-//     await batch.migrate()
-//     // let newMembers = [
-//     //   // '247400794561708032',
-//     //   '235834481020370944',
-//     //   '774710241182351420',
-//     //   '915268831100932096',
-//     //   '586183501389365278',
-//     //   '287405460263403523'
-//     // ]
-//     // for(const memid of newMembers){
-//     //   let member = server.getMember(memid)
-//     //   if(!member){
-//     //     console.log("no member")
-//     //     continue
-//     //   }
-//     //   handleJoin(server, member) 
-//     // }
-//     // batch.resetCultScores()
-//     // batch.migrate()
-//     // batch.resetChanting()
-//     // interactionHandler.init(server)
-//     // await spells_game.init(server)
-//     // runReferralsCounter(server)
-//     // spells_game.run(server)
-//     return;
-//   })
-//   // clock.run()
-//   initMessageCache()
-//   for (const cult of server.Cults.values()) {
-//     console.log("cult:", cult.name, "num-members:", cult.countMembers(server))
-//   }
-// });
-
 setTimeout(() => {
-  //throw new Error("testing")
   if (!loggedIn) {
     exec("kill 1", function(error, stdout, stderr) {
       console.log('stdout: ' + stdout);

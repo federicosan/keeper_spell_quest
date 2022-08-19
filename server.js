@@ -153,9 +153,9 @@ const spellQuestServer = new Server("970091626779254874",
       // roleId
       "1007386782767267960",
       // statsChannel
-      "977052635603554324",
+      "1007387977770610878",
       // proposalsChannel
-      "977642272348864572",
+      "1007387876369121380",
       // emoji id
       null,
       // bonus points

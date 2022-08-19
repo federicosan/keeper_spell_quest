@@ -2,14 +2,12 @@ const { Client, Intents, MessageEmbed } = require('discord.js')
 
 const { server } = require('../server')
 const { message } = require('./message')
-const { vote } = require('../vote')
-const { welcome } = require('../welcome')
-const { handleReaction } = require('../reaction')
-const { handleJoin } = require('../recruit')
-const { interactionHandler } = require('../interaction')
-const { objects } = require('../spells/objects')
-const { homecoming } = require('../game/homecoming')
-const { updateAllStats } = require('../stats')
+const { vote } = require('../game/vote')
+const { welcome } = require('../discord/welcome')
+const { handleReaction } = require('./reaction')
+const { handleJoin } = require('../game/recruit')
+const { interactionHandler } = require('./interaction')
+const { updateAllStats } = require('../game/stats')
 const { IS_RESTARTING } = require('../game/state')
 
 var client = new Client({
@@ -96,33 +94,33 @@ function setClientTriggers() {
   })
 
   client.on('messageReactionAdd', async (reaction, user) => {
-    try {
-      let handled = await homecoming.addReaction(reaction, user)
-      if (handled) {
-        return
-      }
-    } catch (error) {
-      console.log(error)
-    }
-    if (IS_RESTARTING && !server.admins.includes(user.id)) {
-      return
-    }
-    try {
-      let handled = await vote.addReaction(server, reaction, user)
-      if (handled) {
-        return
-      }
-    } catch (error) {
-      console.log(error)
-    }
-    try {
-      let handled = await objects.addReaction(reaction, user)
-      if (handled) {
-        return
-      }
-    } catch (error) {
-      console.log(error)
-    }
+    // try {
+    //   let handled = await homecoming.addReaction(reaction, user)
+    //   if (handled) {
+    //     return
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    // }
+    // if (IS_RESTARTING && !server.admins.includes(user.id)) {
+    //   return
+    // }
+    // try {
+    //   let handled = await vote.addReaction(server, reaction, user)
+    //   if (handled) {
+    //     return
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    // }
+    // try {
+    //   let handled = await objects.addReaction(reaction, user)
+    //   if (handled) {
+    //     return
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    // }
     handleReaction(reaction, user)
 
   })

@@ -1,3 +1,5 @@
 {
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.updateImportsOnFileMove.enabled": "always"
 }
