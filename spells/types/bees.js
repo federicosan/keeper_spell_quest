@@ -18,6 +18,7 @@ class BeesSpell {
     castCache[interaction.message.interaction.id] = this.spell.id
     var cult = server.Cults.userCult(interaction.member)
     let users = cache.CultBeesTargets[cult.id]
+    console.log("users:", users)
     var options = []
     for (const user of users) {
       var _cult = server.Cults.get(user.cult_id)

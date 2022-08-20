@@ -128,31 +128,32 @@ const UserMutex = new StringMutex()
 async function conjure(server, interaction) {
   await interaction.deferReply({ ephemeral: true })
   // verify user has the dust required + inventory-slots available
-  let c = await server.db.collection("items").count({ owner: interaction.member.id })
-  if (c >= 10) {
-    await interaction.editReply({ content: 'you have the maximum number of spells. you must /cast or /drop some to conjure again.', components: [], ephemeral: true })
-    return
-  }
-
-  let user = await server.db.collection("users").findOne({ "discord.userid": interaction.member.id })
-  if (!user) {
-    await interaction.editReply({ content: 'user not found, talk to @hypervisor...', ephemeral: true })
-    return
-  }
-  if (user.coins < DEFAULT_SPELL_PRICE) {
-    await interaction.editReply({ content: `not enough magic <:magic:975922950551244871>. spells cost <:magic:975922950551244871>${DEFAULT_SPELL_PRICE} magic. you have <:magic:975922950551244871>${user.coins},,,`, ephemeral: true })
-    return
-  }
-  let userCult = server.Cults.userCult(interaction.member)
-  console.log("user cult:", userCult)
-
-  console.log("member:", interaction.member)
-  if (!userCult) {
-    await interaction.editReply({ content: `no cult assigned`, components: [], ephemeral: true })
-    return
-  }
+  
   var release = await UserMutex.acquire(interaction.member.id)
   try {
+    let c = await server.db.collection("items").count({ owner: interaction.member.id })
+    if (c >= 10) {
+      await interaction.editReply({ content: 'you have the maximum number of spells. you must /cast or /drop some to conjure again.', components: [], ephemeral: true })
+      return
+    }
+  
+    let user = await server.db.collection("users").findOne({ "discord.userid": interaction.member.id })
+    if (!user) {
+      await interaction.editReply({ content: 'user not found, talk to @hypervisor...', ephemeral: true })
+      return
+    }
+    if (user.coins < DEFAULT_SPELL_PRICE) {
+      await interaction.editReply({ content: `not enough magic <:magic:975922950551244871>. spells cost <:magic:975922950551244871>${DEFAULT_SPELL_PRICE} magic. you have <:magic:975922950551244871>${user.coins},,,`, ephemeral: true })
+      return
+    }
+    let userCult = server.Cults.userCult(interaction.member)
+    console.log("user cult:", userCult)
+  
+    console.log("member:", interaction.member)
+    if (!userCult) {
+      await interaction.editReply({ content: `no cult assigned`, components: [], ephemeral: true })
+      return
+    }
     let spell = await _conjure(server, interaction.member)
     console.log("spell:", spell)
     let embed = spellMessageEmbed(spell)
