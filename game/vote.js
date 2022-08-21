@@ -13,11 +13,15 @@ class Proposal {
   }
 
   async save(server) {
-    await server.database.set(`poposal:${this.id}`, JSON.stringify(this))
+    await server.db.collection("proposals").updateOne({id: this.id}, {$set: this}, {upsert: true})
   }
 
   async delete(server) {
-    await server.database.delete(`poposal:${this.id}`)
+    try{
+      await server.db.collection("proposals").deleteOne({id: this.id})
+    } catch(e) {
+      console.log(e)
+    }
   }
 
   async _removeReaction(server, userId, emojiId) {
@@ -161,12 +165,12 @@ class Proposal {
 let activeProposals = []
 
 async function _loadProposals(server) {
-  var proposals = await server.database.get(`poposals`, { raw: false })
+  var proposals = await server.db.collection("proposals").find({}).toArray()
   console.log("loaded proposals:", proposals)
   if (proposals == null) {
     proposals = []
   } else {
-    proposals = JSON.parse(proposals)
+    proposals = proposals
   }
   return proposals
 }
@@ -224,11 +228,10 @@ async function proposeColor(server, message, cult, proposal) {
 
 async function commitProposal(server, message, cult, proposal) {
   console.log("committing:", proposal)
-  await server.database.set(`poposal:${proposal.id}`, JSON.stringify(proposal))
+  await server.db.collection("proposals").updateOne({id: proposal.id}, {$set: {proposal}}, {upsert: true})
   let proposals = await _loadProposals(server)
   if (!proposals.includes(proposal.id)) {
     proposals.push(proposal.id)
-    await server.database.set(`poposals`, JSON.stringify(proposals))
     message.react(server.Emojis.AYE)
     message.react(server.Emojis.NAY)
     //message.reply(`<@&${cult.roleId}> new motion for voting`)
@@ -251,8 +254,7 @@ async function propose(server, message) {
     message.reply(`ah <@${message.author.id}>, a cultist utters such things in #${server.getChannelName(cult.proposalsChannel)}`)
     return
   }
-
-  let proposal = await server.database.get(`poposal:${message.id}`, { raw: false })
+  let proposal = await server.db.collection("proposals").findOne({id: message.id})
   if (proposal != null) {
     console.log("already proposed")
     return
@@ -290,13 +292,12 @@ async function handleMsg(server, message) {
 
 async function deleteProposal(server, id) {
   console.log("deleting proposal:", id)
-  let proposal = await server.database.get(`poposal:${id}`, { raw: false })
+  let proposal = await server.db.collection("proposals").findOne({id: id})
   if (proposal == null) {
     console.log("no proposal found")
     return
   }
   console.log("deleting proposal:", id)
-  proposal = JSON.parse(proposal)
   Object.setPrototypeOf(proposal, Proposal.prototype)
   proposal.state = ARCHIVED_STATE
   await proposal.delete(server)
@@ -304,7 +305,6 @@ async function deleteProposal(server, id) {
     return id != proposal.id;
   })
   console.log("updated active proposals:", activeProposals)
-  await server.database.set(`poposals`, JSON.stringify(activeProposals))
 }
 
 async function handleMsgDelete(server, message) {
@@ -339,7 +339,6 @@ async function tryCommitProposal(server, proposal, message) {
   activeProposals = activeProposals.filter(function(id) {
     return id != proposal.id;
   })
-  await server.database.set(`poposals`, JSON.stringify(activeProposals))
 }
 
 async function addReaction(server, reaction, user) {
@@ -352,12 +351,11 @@ async function addReaction(server, reaction, user) {
       return true
     }
     // do handling
-    let proposal = await server.database.get(`poposal:${reaction.message.id}`, { raw: false })
+    let proposal = await server.db.collection("proposals").findOne({id: reaction.message.id})
     if (proposal == null) {
       console.log("proposal not found!")
       return false
     }
-    proposal = JSON.parse(proposal)
     Object.setPrototypeOf(proposal, Proposal.prototype)
     proposal.add(server, user.id, reaction._emoji.id)
     await tryCommitProposal(server, proposal, reaction.message)
@@ -377,12 +375,11 @@ async function removeReaction(server, reaction, user) {
 
   if (activeProposals.includes(reaction.message.id)) {
     // do handling
-    let proposal = await server.database.get(`poposal:${reaction.message.id}`, { raw: false })
+    let proposal = await server.db.collection("proposals").findOne({id: reaction.message.id})
     if (proposal == null) {
       console.log("proposal not found!")
       return false
     }
-    proposal = JSON.parse(proposal)
     Object.setPrototypeOf(proposal, Proposal.prototype)
     proposal.remove(server, user.id, reaction._emoji.id)
     await tryCommitProposal(server, proposal, reaction.message)

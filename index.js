@@ -25,7 +25,7 @@ const uri = process.env.MONGO_URI
 
 let mongo = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 server.setDatabase(database)
-server.db = mongo.db("general")
+server.setDB(mongo.db("general"))
 
 async function initMessageCache() {
   var guild = await client.guilds.cache.get(server.Id)

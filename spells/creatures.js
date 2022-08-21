@@ -6,7 +6,6 @@ const { ENEMY_TYPE, ALLY_TYPE, FREEZE_TYPE, TARGET_CULT_TYPE, TARGET_PLAYER_TYPE
 const { adventure } = require('./adventure')
 
 
-
 const nonAncientLikelihood = 0.95
 const LIFESPAN = 2 * 24 * 60 * 60 * 1000
 
@@ -498,7 +497,7 @@ async function runCreatures(server) {
     let cult = server.Cults.get(creature.target.id)
     if (creature.type == ENEMY_TYPE) {
       console.log("dealing creature damage")
-      await cult.incrementCreaturePoints(server.database, -creature.strength)
+      await cult.incrementCreaturePoints(server.kvstore, -creature.strength)
       try {
         //adventure.log(server, `${creature.name} dealt -${creature.strength} to <@&${cult.roleId}>`)
         adventure.log(server, `${creature.name} dealt -${creature.strength} to ${cult.getName(server)}`)
@@ -507,7 +506,7 @@ async function runCreatures(server) {
       }
     } else if (creature.type == ALLY_TYPE) {
       console.log("dealing ally support")
-      await cult.incrementCreaturePoints(server.database, creature.strength)
+      await cult.incrementCreaturePoints(server.kvstore, creature.strength)
       try {
         adventure.log(server, `${creature.name} added +${creature.strength} cult points to ${cult.getName(server)}`)
       } catch (err) {

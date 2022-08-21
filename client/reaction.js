@@ -13,7 +13,7 @@ exports.handleReaction = async function(reaction, user) {
   } catch (error) {
     console.log(error)
   }
-  if (IS_RESTARTING && !server.admins.includes(user.id)) {
+  if (IS_RESTARTING && !server.isAdmin(user.id)) {
     return
   }
   try {

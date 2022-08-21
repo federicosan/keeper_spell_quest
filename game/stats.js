@@ -35,8 +35,8 @@ async function saveStatsMessages() {
 async function getStats() {
   let _cults = []
   for (const [key, cult] of server.Cults.entries()) {
-    let totalChants = await cult.countTotalChants(server.database)
-    let population = await server.database.get(`cult:members:${cult.id}`, { raw: false })
+    let totalChants = await cult.countTotalChants(server.kvstore)
+    let population = await server.kvstore.get(`cult:members:${cult.id}`)
     if (totalChants == null) {
       totalChants = 0;
     }
@@ -76,7 +76,7 @@ async function updateCultMembershipCounts() {
   })
   for (const [key, cult] of server.Cults.entries()) {
     console.log("cult:", cult.name, "members:", counts[cult.id])
-    await server.database.set(`cult:members:${cult.id}`, counts[cult.id])
+    await server.kvstore.set(`cult:members:${cult.id}`, counts[cult.id])
   }
 }
 

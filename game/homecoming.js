@@ -82,7 +82,7 @@ async function handleReaction(reaction, user) {
     }
     if (cult) {
       let metrics = await cult.getMetrics(server)
-      let dbuser = await server.getDBUser(user.id)
+      let dbuser = await server.getUser(user.id)
       if (metrics.population >= MAX_MEMBERS || metrics.points + (dbuser ? dbuser.points : 0) >= MAX_POINTS) {
         reaction.users.remove(user.id)
         return true

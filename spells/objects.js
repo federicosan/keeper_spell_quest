@@ -151,7 +151,7 @@ class Chest {
       case "cult_points":
         var amount = Math.max(2, Math.round(0.6 * (this.reward * 12 + (Math.random() * this.reward * 6) + (Math.random() * 2))))
         let cult = server.Cults.get(this.target.id)
-        await cult.addPoints(server.database, 'cult:miscsource', amount)
+        await cult.addPoints(server.kvstore, 'cult:miscsource', amount)
         return `${amount} points 𐂥 to ${server.Cults.get(this.target.id).getName(server)}!`
     }
     return null

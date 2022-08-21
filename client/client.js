@@ -23,7 +23,7 @@ server.setClient(client)
 
 function setClientTriggers() {
   client.on('messageCreate', async (msg) => {
-    if (IS_RESTARTING && !server.admins.includes(msg.member.id)) {
+    if (IS_RESTARTING && !server.isAdmin(msg.member.id)) {
       if (msg.channel.id == '1007018715474313216' && msg.type != "REPLY") {
         msg.react(server.Emojis.AYE)
         msg.react(server.Emojis.NAY)
@@ -58,7 +58,7 @@ function setClientTriggers() {
       let didUpdate = false
       for (const [key, _cult] of server.Cults.entries()) {
         if (oldMember.roles.cache.has(_cult.roleId)) {
-          await _cult.addPoints(server.database, `cult:members`, -1)
+          await _cult.addPoints(server.kvstore, `cult:members`, -1)
           didUpdate = true
         }
       }
@@ -70,7 +70,7 @@ function setClientTriggers() {
     if (oldMember.roles.cache.has(cult.roleId)) {
       return
     }
-    await cult.addPoints(server.database, `cult:members`, 1)
+    await cult.addPoints(server.kvstore, `cult:members`, 1)
     // TODO: enable once we switch to cult chant system
     try {
       await handleJoin(server, newMember)
@@ -102,7 +102,7 @@ function setClientTriggers() {
     // } catch (error) {
     //   console.log(error)
     // }
-    // if (IS_RESTARTING && !server.admins.includes(user.id)) {
+    // if (IS_RESTARTING && !server.isAdmin(user.id)) {
     //   return
     // }
     // try {
@@ -126,7 +126,7 @@ function setClientTriggers() {
   })
 
   client.on('messageReactionRemove', async (reaction, user) => {
-    if (IS_RESTARTING && !server.admins.includes(user.id)) {
+    if (IS_RESTARTING && !server.isAdmin(user.id)) {
       return
     }
     try {
@@ -140,7 +140,7 @@ function setClientTriggers() {
   })
 
   client.on('interactionCreate', async interaction => {
-    if (IS_RESTARTING && !server.admins.includes(interaction.member.id)) {
+    if (IS_RESTARTING && !server.isAdmin(interaction.member.id)) {
       return
     }
     await interactionHandler.handle(server, interaction)

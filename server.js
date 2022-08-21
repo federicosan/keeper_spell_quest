@@ -1,6 +1,7 @@
-const { User } = require('./types/user')
+const { User, Cultist } = require('./types/user')
 const { Cult, Cults } = require('./types/cult')
 const { FREEZER_TYPE } = require('./spells/constants')
+const { KeyValueStore } = require('./utils/kvstore')
 
 class Server {
   constructor(id, cults, testCult, welcomeChannel, statsChannel, beginChannel, altarChannel, channels, emojis, roles) {
@@ -20,6 +21,11 @@ class Server {
 
   setClient(client) {
     this.client = client
+  }
+  
+  setDB(db) {
+   this.db = db
+   this.kvstore = new KeyValueStore(db) 
   }
 
   setDatabase(database) {
@@ -52,13 +58,18 @@ class Server {
     }
     return sequenceDocument.sequence_value.toString();
   }
+  
+  async getUser(id) {
+    let user = await this.db.collection("users").findOne({ 'discord.userid': id })
+    Object.setPrototypeOf(user, Cultist.prototype)
+    return user
+  }
 
   async loadUser(id) {
-    let user = await this.database.get(`user:${id}`, { raw: false })
+    let user = await this.kvstore.get(`user:${id}`)
     if (user == null) {
       user = new User(id, 0)
     } else {
-      user = JSON.parse(user)
       Object.setPrototypeOf(user, User.prototype)
     }
     return user
@@ -70,13 +81,8 @@ class Server {
     return members
   }
 
-  async getDBUser(id) {
-    let user = await this.db.collection("users").findOne({ 'discord.userid': id })
-    return user
-  }
-
   async saveUser(user) {
-    await this.database.set(`user:${user.id}`, JSON.stringify(user))
+    await this.kvstore.set(`user:${user.Id}`, user)
   }
 
   getMember(id) {
@@ -117,7 +123,7 @@ class Server {
   }
 
   async getCachedMessage(channelId, key) {
-    let messageId = await this.database.get(`${key}:${channelId}`, { raw: false })
+    let messageId = await this.kvstore.get(`${key}:${channelId}`)
     if (!messageId) {
       return null
     }
@@ -126,7 +132,7 @@ class Server {
   }
 
   async updateCachedMessage(channelId, key, value) {
-    let messageId = await this.database.get(`${key}:${channelId}`, { raw: false })
+    let messageId = await this.kvstore.get(`${key}:${channelId}`)
     let channel = this.client.channels.cache.get(channelId)
     if (messageId) {
       let msg = await channel.messages.fetch(messageId)
@@ -136,8 +142,12 @@ class Server {
       }
     }
     let message = await channel.send(value)
-    await this.database.set(`${key}:${channelId}`, message.id)
+    await this.kvstore.set(`${key}:${channelId}`, message.id)
     return message
+  }
+  
+  isAdmin(id){
+    return this.admins.includes(id)
   }
 
 }

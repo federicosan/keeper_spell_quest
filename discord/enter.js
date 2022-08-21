@@ -36,9 +36,9 @@ Actions you take earn points for your cult 𐂥.`)
     .setFooter({ text: '​', iconURL: 'https://cdn.discordapp.com/emojis/975947945906176020.webp?size=96&quality=lossless' })
   await interaction.reply({ embeds: [embed], ephemeral: true })
   var intervalId = setInterval(async function() {
-    var _user = server.loadUser(interaction.member.id)
+    var _user = server.getUser(interaction.member.id)
     // _user.numChants > 0 check for backwards compatibility
-    if (_user && (_user.hasChanted || (_user.numChants && _user.numChants > 0)) || interaction.member.id == server.ADMIN_ID) {
+    if (_user && _user.hasChanted() || server.isAdmin(interaction.member.id)) {
       const row = new MessageActionRow()
         .addComponents(
           new MessageButton()
@@ -104,7 +104,7 @@ async function continue_2(server, interaction) {
 
 // recruiting + sabotage
 async function continue_3(server, interaction) {
-  let user = server.getDBUser(interaction.member.id)
+  let user = server.getUser(interaction.member.id)
   let zealousLink = "no link found, be sure to bind @ https://spells.quest/bind"
   if (user) {
     zealousLink = `https://spells.quest/?z=${user.referral_key}`

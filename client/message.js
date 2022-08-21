@@ -2,6 +2,7 @@ const { MessageEmbed } = require('discord.js')
 const moment = require('moment')
 
 const { RateLimiter } = require('../utils/ratelimit')
+const { StringMutex } = require('../utils/mutex')
 const { User } = require('../types/user')
 const { server } = require('../server')
 const { points } = require('../spells/points')
@@ -16,7 +17,7 @@ const { homecoming } = require('../game/homecoming')
 const EPOCH_PERIOD = 6 * 60 * 60 * 1000
 
 var chantReactionLimiter = new RateLimiter(4, 60 * 1000)
-
+var UserMutex = new StringMutex()
 async function handleChant(msg, noReply) {
   console.log("msg:", msg)
   var cult
@@ -26,7 +27,7 @@ async function handleChant(msg, noReply) {
     cult = server.userIdCult(msg.author.id)
   }
   if (!cult) {
-    if (!server.admins.includes(msg.member.id)) {
+    if (!server.isAdmin(msg.member.id)) {
       console.log("no cult for author found:", msg.member.id)
     }
     return
@@ -43,90 +44,82 @@ async function handleChant(msg, noReply) {
     msg.reply("the altar has moved, chant in " + msg.guild.channels.cache.get(server.AltarChannelId).toString())
     return
   }
-
-  let user = await server.database.get(`user:${msg.author.id}`, { raw: false })
-  if (user == null) {
-    user = new User(msg.author.id, new Date(0))
-  } else {
-    user = JSON.parse(user)
-    Object.setPrototypeOf(user, User.prototype)
-  }
-  let lastCheckpoint = Date.now() - (Date.now() - 4 * 60 * 60 * 1000) % EPOCH_PERIOD
-  if (lastCheckpoint < user.lastChant) {
-    // send cant chant yet message
-    if (!noReply) {
-      msg.reply({ content: `${msg.author} you may only chant once every ${moment.duration(EPOCH_PERIOD).humanize()}` }).catch(console.error)
-    } else {
-      console.log("already logged chant, returning")
-      chantReactionLimiter.try(() => {
-        try {
-          msg.react('976203184802496562')
-        } catch (error) {
-          console.log("chant error:", error)
-        }
-      })
-      chantReactionLimiter.try(() => {
-        try {
-          msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
-        } catch (error) {
-          console.log("chant error:", error)
-        }
-      })
+  var release = await UserMutex.acquire(msg.author.id)
+  try{
+    let user = await server.getUser(msg.author.id) 
+    if (!user) {
+      let embed = new MessageEmbed()
+        .setTitle("bind to begin chanting <:magic:975922950551244871>")
+        .setColor("#FFFFE0")
+        .setURL('https://spells.quest/bind')
+        .setDescription(`you must [**bind**](https://spells.quest/bind) to earn magic <:magic:975922950551244871>\nyou must earn <:magic:975922950551244871> to conjure spells <:rare_shard:982122044617551882>`)
+        .addField('binding', 'one click auth with discord so @keeper can connect your wallet to your profile. [go here](https://spells.quest/bind) and click the 🗡')
+        .addField('why lil ol\' me? <:isforme:986732126332420136>', 'you are a good and early zealot. all new cultists are automatically bound when they join')
+        .setFooter({ text: '​', iconURL: 'https://cdn.discordapp.com/emojis/975977080699379712.webp?size=96&quality=lossless' })
+      msg.reply({ embeds: [embed] }).catch(console.error)
+      return
     }
-    return
-  }
-  user.lastChant = Date.now()
-  user.hasChanted = true
-  let dbUser = await server.db.collection("users").findOne({ "discord.userid": msg.author.id })
-  console.log("handling chant from author:", msg.author.id, "chant db-user id:", dbUser ? dbUser.discord.userid : null)
-  if (dbUser) {
-    await points.handleChant(server, dbUser)
-  } else {
-    let embed = new MessageEmbed()
-      .setTitle("bind to earn magic <:magic:975922950551244871>")
-      .setColor("#FFFFE0")
-      .setURL('https://spells.quest/bind')
-      .setDescription(`you must [**bind**](https://spells.quest/bind) to earn magic <:magic:975922950551244871>\nyou must earn <:magic:975922950551244871> to conjure spells <:rare_shard:982122044617551882>`)
-      .addField('binding', 'one click auth with discord so @keeper can connect your wallet to your profile. [go here](https://spells.quest/bind) and click the 🗡')
-      .addField('why lil ol\' me? <:isforme:986732126332420136>', 'you are a good and early zealot. all new cultists are automatically bound when they join')
-      .setFooter({ text: '​', iconURL: 'https://cdn.discordapp.com/emojis/975977080699379712.webp?size=96&quality=lossless' })
-    msg.reply({ embeds: [embed] }).catch(console.error)
-  }
-  console.log("here")
-  if (server.admins.includes(msg.author.id)) {
-    return
-  }
-  let totalChants = await server.database.get(`cult:${cult.id}`, { raw: false })
-  if (totalChants == null) {
-    totalChants = 0;
-  }
-  totalChants++
-  await server.database.set(`cult:${cult.id}`, totalChants)
-  await server.database.set(`user:${msg.author.id}`, JSON.stringify(user))
-  let boost = await points.getActiveCultBoost(server, msg.author.id)
-  console.log("boost:", boost)
-  if (boost) {
-    await cult.incrementBonusPoints(server.database, boost - 1)
-  }
-  // react
-  chantReactionLimiter.try(() => {
+    
+    let lastCheckpoint = Date.now() - (Date.now() - 4 * 60 * 60 * 1000) % EPOCH_PERIOD
+    if (lastCheckpoint < await user.lastChantedAt(server)) {
+      // send cant chant yet message
+      if (!noReply) {
+        msg.reply({ content: `${msg.author} you may only chant once every ${moment.duration(EPOCH_PERIOD).humanize()}` }).catch(console.error)
+      } else {
+        console.log("already logged chant, returning")
+        chantReactionLimiter.try(() => {
+          try {
+            msg.react('976203184802496562')
+          } catch (error) {
+            console.log("chant error:", error)
+          }
+        })
+        chantReactionLimiter.try(() => {
+          try {
+            msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
+          } catch (error) {
+            console.log("chant error:", error)
+          }
+        })
+      }
+      return
+    }
+    console.log("handling chant from author:", msg.author.id, "chant db-user id:", user ? user.discord.userid : null)
+    
+    await points.handleChant(server, user)
+    
+    if (server.isAdmin(msg.author.id)) {
+      return
+    }
+    
+    await server.kvstore.increment(`cult:${cult.id}`, totalChants)
+    let boost = await points.getActiveCultBoost(server, msg.author.id)
+    console.log("boost:", boost)
+    if (boost) {
+      await cult.incrementBonusPoints(server.kvstore, boost - 1)
+    }
+    // react
+    chantReactionLimiter.try(() => {
+      try {
+        msg.react('976203184802496562')
+      } catch (error) {
+        console.log("chant error:", error)
+      }
+    })
+    chantReactionLimiter.try(() => {
+      try {
+        msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
+      } catch (error) {
+        console.log("chant error:", error)
+      }
+    })
     try {
-      msg.react('976203184802496562')
+      updateAllStats(cult)
     } catch (error) {
-      console.log("chant error:", error)
+      console.log("update error:", error)
     }
-  })
-  chantReactionLimiter.try(() => {
-    try {
-      msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
-    } catch (error) {
-      console.log("chant error:", error)
-    }
-  })
-  try {
-    updateAllStats(cult)
-  } catch (error) {
-    console.log("update error:", error)
+  } finally {
+    release()
   }
 }
 
@@ -239,7 +232,7 @@ async function handle(msg) {
     msg.react(server.Emojis.NAY)
     return
   }
-  if (msg.channel.id == '986712037633720390' && !server.admins.includes(msg.author.id) && msg.interaction == null) {
+  if (msg.channel.id == '986712037633720390' && !server.isAdmin(msg.author.id) && msg.interaction == null) {
     msg.delete()
     return
   }
@@ -272,7 +265,7 @@ async function handle(msg) {
     return
   }
 
-  if (server.admins.includes(msg.author.id)) {
+  if (server.isAdmin(msg.author.id)) {
     if (msg.content.startsWith("!logChant")) {
       let messageId = msg.content.replace("!logChant ", "")
       forceCountMessage(server.AltarChannelId, messageId)

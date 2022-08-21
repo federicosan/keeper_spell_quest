@@ -413,7 +413,7 @@ async function castConfirm(server, interaction) {
   }
   user.castCounts[from] = count + 1
   // increment summons on target ancient
-  let summons = await server.database.get(`ancient:${target.name}`, {raw: false})
+  let summons = await server.kvstore.get(`ancient:${target.name}`, {raw: false})
   if(summons == null){
     summons = 0
   }
@@ -431,7 +431,7 @@ async function castConfirm(server, interaction) {
     return
   }
   await server.saveUser(user)
-  await server.database.set(`ancient:${target.name}`, summons)
+  await server.kvstore.set(`ancient:${target.name}`, summons)
   summoningStats(server, target.name)
   logCast(server, user, from, target.name)
   try {
@@ -454,7 +454,7 @@ async function getRTStatsMsg(server){
   let max = 0
   let summonCounts = {}
   for (const [id, ancient] of Object.entries(cultAncients)) {
-    let summons = await server.database.get(`ancient:${ancient.name}`, {raw: false})
+    let summons = await server.kvstore.get(`ancient:${ancient.name}`)
     if(summons == null){
       summons = 0
     }
@@ -477,7 +477,7 @@ async function getRTStatsMsg(server){
 }
 async function updateRTStats(server){
   let _channelId = "983517113014689852"
-  let beginMessageId = await server.database.get(`summoning_stats:${_channelId}`, {raw: false})
+  let beginMessageId = await server.kvstore.get(`summoning_stats:${_channelId}`)
   let channel = server.client.channels.cache.get(_channelId)
   if(beginMessageId){
     let msg = await channel.messages.fetch(beginMessageId)
@@ -488,7 +488,7 @@ async function updateRTStats(server){
     }
   }
   let message = await channel.send(await getRTStatsMsg(server))
-  await server.database.set(`summoning_stats:${_channelId}`, message.id)
+  await server.kvstore.set(`summoning_stats:${_channelId}`, message.id)
 }
 
 async function summoningStats(server, ancientName) {
@@ -499,7 +499,7 @@ async function summoningStats(server, ancientName) {
   let max = 0
   let summonCounts = {}
   for (const [id, ancient] of Object.entries(cultAncients)) {
-    let summons = await server.database.get(`ancient:${ancient.name}`, {raw: false})
+    let summons = await server.kvstore.get(`ancient:${ancient.name}`, {raw: false})
     if(summons == null){
       summons = 0
     }

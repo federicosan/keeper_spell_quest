@@ -69,70 +69,70 @@ class Cult {
     return role.members.size
   }
 
-  async saveEmoji(database) {
-    await database.set(`cult:emoji:${this.id}`, this.emoji)
+  async saveEmoji(kvstore) {
+    await kvstore.set(`cult:emoji:${this.id}`, this.emoji)
   }
 
-  async getPoints(database, key) {
-    var points = await database.get(`${key}:${this.id}`, { raw: false })
+  async getPoints(kvstore, key) {
+    var points = await kvstore.get(`${key}:${this.id}`)
     if (points == null) {
       points = 0;
     }
     return points
   }
 
-  async addPoints(database, key, amount) {
-    let points = await this.getPoints(database, key)
+  async addPoints(kvstore, key, amount) {
+    let points = await this.getPoints(kvstore, key)
     points += amount
-    await database.set(`${key}:${this.id}`, points)
+    await kvstore.set(`${key}:${this.id}`, points)
     return points
   }
 
-  async countTotalChants(database) {
-    let sabotageRefs = await this.getPoints(database, `cult:referrals:sabotage`)
-    let selfRefs = await this.getPoints(database, `cult:referrals:self`)
+  async countTotalChants(kvstore) {
+    let sabotageRefs = await this.getPoints(kvstore, `cult:referrals:sabotage`)
+    let selfRefs = await this.getPoints(kvstore, `cult:referrals:self`)
     console.log(this.name, "self-referrals:", selfRefs, "sabotage-refs:", sabotageRefs)
-    let totalChants = await this.getPoints(database, `cult`)
-    var points = await this.getPoints(database, `cult:creaturepoints`)
-    var miscPoints = await this.getPoints(database, `cult:miscsource`)
-    let amplifiedPoints = await this.getPoints(database, `cult:amplifiedPoints`)
+    let totalChants = await this.getPoints(kvstore, `cult`)
+    var points = await this.getPoints(kvstore, `cult:creaturepoints`)
+    var miscPoints = await this.getPoints(kvstore, `cult:miscsource`)
+    let amplifiedPoints = await this.getPoints(kvstore, `cult:amplifiedPoints`)
 
-    var fragments = await this.getPoints(database, `cult:fragments`)
-    var sabotageFragments = await this.getPoints(database, `cult:fragments:sabotage`)
-    var saboteurFragments = await this.getPoints(database, `cult:fragments:saboteur`)
+    var fragments = await this.getPoints(kvstore, `cult:fragments`)
+    var sabotageFragments = await this.getPoints(kvstore, `cult:fragments:sabotage`)
+    var saboteurFragments = await this.getPoints(kvstore, `cult:fragments:saboteur`)
     var fragmentsPoints = fragments * FRAGMENTS_CULT_POINTS + sabotageFragments * FRAGMENTS_SABOTAGE_CULT_POINTS + saboteurFragments * FRAGMENTS_SABOTEUR_CULT_POINTS
 
     return totalChants + sabotageRefs * SABOTAGE_POINTS + selfRefs * RECRUIT_CULT_POINTS + this.bonusPoints + points + amplifiedPoints + miscPoints + fragmentsPoints
   }
 
-  async resetPoints(database) {
-    await database.set(`cult:referrals:sabotage:${this.id}`, 0)
-    await database.set(`cult:referrals:self:${this.id}`, 0)
-    await database.set(`cult:${this.id}`, 0)
-    await database.set(`cult:creaturepoints:${this.id}`, 0)
-    await database.set(`cult:miscsource:${this.id}`, 0)
-    await database.set(`cult:amplifiedPoints:${this.id}`, 0)
-    await database.set(`cult:fragments:${this.id}`, 0)
-    await database.set(`cult:fragments:sabotage:${this.id}`, 0)
-    await database.set(`cult:fragments:saboteur:${this.id}`, 0)
+  async resetPoints(kvstore) {
+    await kvstore.set(`cult:referrals:sabotage:${this.id}`, 0)
+    await kvstore.set(`cult:referrals:self:${this.id}`, 0)
+    await kvstore.set(`cult:${this.id}`, 0)
+    await kvstore.set(`cult:creaturepoints:${this.id}`, 0)
+    await kvstore.set(`cult:miscsource:${this.id}`, 0)
+    await kvstore.set(`cult:amplifiedPoints:${this.id}`, 0)
+    await kvstore.set(`cult:fragments:${this.id}`, 0)
+    await kvstore.set(`cult:fragments:sabotage:${this.id}`, 0)
+    await kvstore.set(`cult:fragments:saboteur:${this.id}`, 0)
     console.log("done resetting points for cult:", this.id)
   }
 
-  async incrementCreaturePoints(database, delta) {
-    let points = await database.get(`cult:creaturepoints:${this.id}`, { raw: false })
+  async incrementCreaturePoints(kvstore, delta) {
+    let points = await kvstore.get(`cult:creaturepoints:${this.id}`)
     if (points == null) {
       points = 0;
     }
     points += delta
-    await database.set(`cult:creaturepoints:${this.id}`, points)
+    await kvstore.set(`cult:creaturepoints:${this.id}`, points)
   }
 
-  async incrementBonusPoints(database, delta) {
-    await this.addPoints(database, `cult:amplifiedPoints`, delta)
+  async incrementBonusPoints(kvstore, delta) {
+    await this.addPoints(kvstore, `cult:amplifiedPoints`, delta)
   }
 
-  async getBonusPoints(database) {
-    return await this.getPoints(database, `cult:amplifiedPoints`)
+  async getBonusPoints(kvstore) {
+    return await this.getPoints(kvstore, `cult:amplifiedPoints`)
   }
 
   async rename(server, newName, newEmoji) {
@@ -148,7 +148,7 @@ class Cult {
     } else {
       newChannelName = `${newEmoji}・${newName.toLowerCase().replaceAll(" ", "-")}`
       this.emoji = newEmoji
-      await this.saveEmoji(server.database)
+      await this.saveEmoji(server.kvstore)
     }
     console.log("new channel name:", newChannelName)
     try {
@@ -257,9 +257,9 @@ class Cults {
     return i
   }
 
-  async loadEmojis(database) {
+  async loadEmojis(kvstore) {
     for (const [key, cult] of Object.entries(this.cults)) {
-      let emoji = await database.get(`cult:emoji:${cult.id}`, { raw: false })
+      let emoji = await kvstore.get(`cult:emoji:${cult.id}`)
       if (emoji) {
         console.log("CULT EMOJI:", emoji)
         cult.emoji = emoji

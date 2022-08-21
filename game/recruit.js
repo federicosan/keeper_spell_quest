@@ -52,9 +52,9 @@ async function calculateCultReferrals(cult, server) {
     }
   }
   console.log("cult:", cult.id, "self-referrals:", selfCount, "sabotage:", sabotageCount)
-  await server.database.set(`cult:referrals:self:${cult.id}`, selfCount)
-  await server.database.set(`cult:referrals:sabotage:${cult.id}`, sabotageCount)
-  await server.database.set(`cult:referrals:${cult.id}`, selfCount + sabotageCount)
+  await server.kvstore.set(`cult:referrals:self:${cult.id}`, selfCount)
+  await server.kvstore.set(`cult:referrals:sabotage:${cult.id}`, sabotageCount)
+  await server.kvstore.set(`cult:referrals:${cult.id}`, selfCount + sabotageCount)
 }
 
 async function runReferralsCounter(server) {
@@ -144,9 +144,9 @@ async function _handleJoin(server, member) {
         console.log("isDeadZoneRecruitment:", isDeadZoneRecruitment)
         if (!isDeadZoneRecruitment) {
           // add cult points
-          await zealotCult.addPoints(server.database, `cult:referrals:${isSabotage ? 'sabotage' : 'self'}`, 1)
+          await zealotCult.addPoints(server.kvstore, `cult:referrals:${isSabotage ? 'sabotage' : 'self'}`, 1)
           if (boost > 1) {
-            await zealotCult.incrementBonusPoints(server.database, basePoints * (boost - 1))
+            await zealotCult.incrementBonusPoints(server.kvstore, basePoints * (boost - 1))
           }
         }
         // add user points & magic

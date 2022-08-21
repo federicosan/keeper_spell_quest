@@ -346,13 +346,13 @@ async function resetChanting() {
     ].includes(user.discord.userid)) {
       console.log("already chanted")
     }
-    let replitUser = await server.loadUser(user.discord.userid)
-    if (!replitUser) {
-      console.log("no replit user found for user:", user.discord.userid)
-    } else {
-      replitUser.lastChant = 0
-      await server.saveUser(replitUser)
-    }
+    // let replitUser = await server.loadUser(user.discord.userid)
+    // if (!replitUser) {
+    //   console.log("no replit user found for user:", user.discord.userid)
+    // } else {
+    //   replitUser.lastChant = 0
+    //   await server.saveUser(replitUser)
+    // }
   }
   console.log("done resetting chanting")
 }
@@ -451,7 +451,7 @@ async function updateCultRoleNamesAndChannels() {
 
 async function resetCultScores() {
   for (const cult of server.Cults.values()) {
-    await cult.resetPoints(server.database)
+    await cult.resetPoints(server.kvstore)
   }
 }
 
@@ -711,6 +711,40 @@ async function assignKeys() {
   ]
 }
 
+async function migrateDatabase() {
+  var _getReplPoints = async (key, id) => {
+    var points = await server.database.get(`${key}:${id}`, {raw: false})
+    if (points == null) {
+      points = 0;
+    }
+    return points
+  }
+  let keys = [
+    `cult:referrals:sabotage`,
+    `cult:referrals:self`,
+    `cult`,
+    `cult:creaturepoints`,
+    `cult:miscsource`,
+    `cult:amplifiedPoints`,
+    `cult:fragments`,
+    `cult:fragments:sabotage`,
+    `cult:fragments:saboteur`
+  ]
+  for ( const key of keys ){
+    for(const cult of server.Cults.values()){
+      let points = await _getReplPoints(key, cult.id)
+      console.log("from cult:", cult.name, "key:", key, "points:", points)
+      await server.kvstore.set(`${key}:${cult.id}`, points)
+      let newp = await cult.getPoints(server.kvstore, key)
+      console.log("to cult:", cult.name, "key:", key, "points:", newp)
+      if(newp != points){
+        console.log("ERROR:", key, "points do not match")
+      }
+    }
+  }
+  
+}
+
 exports.batch = {
   resetCultScores: resetCultScores,
   resetChanting: resetChanting,
@@ -724,5 +758,6 @@ exports.batch = {
   markWL: markWL,
   initNumReferrals: initNumReferrals,
   loadUsersCheckpoint: loadUsersCheckpoint,
-  prepForHomecoming: prepForHomecoming
+  prepForHomecoming: prepForHomecoming,
+  migrateDatabase: migrateDatabase
 }

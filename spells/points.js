@@ -154,23 +154,23 @@ async function handleFragmentsChant(server, userId, cult, isSabotaged, saboteurs
   }
   // var points = isSabotaged ? FRAGMENTS_SABOTAGE_CULT_POINTS : FRAGMENTS_CULT_POINTS
   if (isSabotaged) {
-    cult.addPoints(server.database, `cult:fragments:sabotage`, 1)
+    cult.addPoints(server.kvstore, `cult:fragments:sabotage`, 1)
     adventure.log(server, `${cult.getName(server)}'s CALMIT SIN SABOTAGED! -𐂥${Math.abs(FRAGMENTS_SABOTAGE_CULT_POINTS)}`)
   } else {
-    cult.addPoints(server.database, `cult:fragments`, 1)
+    cult.addPoints(server.kvstore, `cult:fragments`, 1)
     adventure.log(server, `${cult.getName(server)}'s CALMIT SIN CHANTED! +𐂥${Math.abs(FRAGMENTS_CULT_POINTS)}`)
   }
   for (const cultId of saboteurs) {
     let _cult = server.Cults.get(cultId)
     if (_cult) {
-      _cult.addPoints(server.database, `cult:fragments:saboteur`, 1)
+      _cult.addPoints(server.kvstore, `cult:fragments:saboteur`, 1)
       adventure.log(server, `${_cult.getName(server)} sabotaged ${cult.getName(server)} +𐂥${Math.abs(FRAGMENTS_SABOTEUR_CULT_POINTS)}`)
     }
   }
   // let boost = await getActiveCultBoost(server, userId)
   // console.log("boost:", boost)
   // if (boost && !isSabotaged) {
-  //   await cult.incrementBonusPoints(server.database, (boost - 1) * points)
+  //   await cult.incrementBonusPoints(server.kvstore, (boost - 1) * points)
   // }
 }
 

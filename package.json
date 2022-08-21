@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "create-env": "printenv > .env"
   },
   "dependencies": {
     "@discordjs/builders": "^0.15.0",
@@ -14,10 +15,12 @@
     "discord.js": "^13.8.0",
     "dotenv": "^16.0.1",
     "emoji-regex": "^10.1.0",
+    "forever": "^4.0.3",
     "grapheme-breaker": "^0.3.2",
     "jstat": "^1.9.5",
     "moment": "^2.29.4",
     "mongodb": "^4.6.0",
+    "nodemon": "^2.0.19",
     "pm2": "^5.2.0",
     "web3": "^1.7.3",
     "zod": "^3.11.6"
