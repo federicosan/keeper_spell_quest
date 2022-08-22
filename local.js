@@ -22,7 +22,7 @@ client.once('ready', async () => {
       console.log("mgo connect err:", err)
     }
     // batch.migrateDatabase()
-    let user = await server.getUser('798463680504266752')
+    let user = await server.getUser('415235408805363725')
     console.log("user:", await user.lastChantedAt(server))
     // batch.prepForHomecoming(server)
     // batch.migrate()

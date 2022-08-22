@@ -15,7 +15,7 @@ class Cultist {
   
   async lastChantedAt(server) {
     try {
-      let lastChant = (await server.db.collection("events").find({'metadata.user':this.id, event: 'chant'}).sort({'metadata.timestamp': -1}).limit(1).toArray())[0]
+      let lastChant = (await server.db.collection("events").find({'metadata.user':this.id, event: 'chant'}).sort({'timestamp': -1}).limit(1).toArray())[0]
       console.log("last chant:", lastChant)
       if(lastChant){
         return lastChant.timestamp
