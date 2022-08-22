@@ -13,12 +13,14 @@ class KeyValueStore {
   async get(key){
     try{
       let r = await this.db.collection("kv").findOne({ key: key})
-      return r.value
+      if(r){
+        return r.value
+      }
+      return null
     } catch(e) {
       console.log(e)
       return null
     }
-    
   }
   
   async increment(key, amount) {

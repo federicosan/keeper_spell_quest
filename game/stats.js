@@ -24,8 +24,12 @@ function setUpdatesDisabled(disabled) {
 }
 
 async function loadStatsMessages() {
-  const data = await fs.readFile("last_stats_messages.json", "utf8");
-  lastStatsMessages = JSON.parse(data)
+  try {
+    const data = await fs.readFile("last_stats_messages.json", "utf8");
+    lastStatsMessages = JSON.parse(data)
+  } catch(err){
+    console.log(err)
+  }
 }
 
 async function saveStatsMessages() {

@@ -13,8 +13,6 @@ const { toHrMin } = require('../utils/time')
 
 const clientId = '974842656372953118';
 
-const rest = new REST({ version: '9' }).setToken(process.env.TOKEN)
-
 const conjureCmd = new SlashCommandBuilder()
   .setName('conjure')
   .setDescription('conjure spells')
@@ -83,7 +81,7 @@ const userStatsCtx = new ContextMenuCommandBuilder()
 async function init(server) {
   try {
     console.log('Started refreshing application (/) commands.');
-
+    const rest = new REST({ version: '9' }).setToken(process.env.TOKEN)
     await rest.put(
       Routes.applicationGuildCommands(clientId, server.Id),
       {

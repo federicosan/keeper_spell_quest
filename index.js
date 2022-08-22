@@ -71,7 +71,7 @@ client.once('ready', async () => {
   loggedIn = true
   await server.loadDiscordUsers()
   await vote.init(server)
-  await server.Cults.loadEmojis(database)
+  await server.Cults.loadEmojis(server.kvstore)
   await stats.init()
   runPurgatory(server)
 
