@@ -34,7 +34,9 @@ steps:
         '--cpu',
         '2',
         '--memory',
-        '500Mi'
+        '600Mi',
+        '--min-instances',
+        '1'
       ]
 images:
  - 'gcr.io/$PROJECT_ID/keeper'
