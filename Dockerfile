@@ -14,4 +14,5 @@ RUN npm install -g forever
 
 COPY . .
 
-CMD [ "forever", "start", "index.js" ]
+# CMD [ "forever", "start", "index.js" ]
+CMD [ "node", "index.js" ]
