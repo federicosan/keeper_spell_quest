@@ -26,7 +26,9 @@ function setUpdatesDisabled(disabled) {
 async function loadStatsMessages() {
   try {
     var data = await server.kvstore.get("last_stats_messages")
-    lastStatsMessages = JSON.parse(data)
+    if (data) {
+      lastStatsMessages = JSON.parse(data)
+    }
   } catch(err){
     console.log(err)
   }
