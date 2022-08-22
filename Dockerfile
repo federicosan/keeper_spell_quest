@@ -10,8 +10,8 @@ COPY package*.json ./
 
 RUN npm install --production
 
-RUN npm install -g forever nodemon
+RUN npm install -g forever
 
 COPY . .
 
-CMD [ "forever", "start", "nodemon", "--exitcrash", "index.js" ]
+CMD [ "forever", "start", "index.js" ]
