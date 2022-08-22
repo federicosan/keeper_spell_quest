@@ -28,7 +28,7 @@ class Cultist {
     }
   }
   
-  async hasChanted() {
+  hasChanted() {
     return getAllPastChantsCount(this) > 0
   }
 }

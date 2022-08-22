@@ -36,7 +36,7 @@ Actions you take earn points for your cult 𐂥.`)
     .setFooter({ text: '​', iconURL: 'https://cdn.discordapp.com/emojis/975947945906176020.webp?size=96&quality=lossless' })
   await interaction.reply({ embeds: [embed], ephemeral: true })
   var intervalId = setInterval(async function() {
-    var _user = server.getUser(interaction.member.id)
+    var _user = await server.getUser(interaction.member.id)
     // _user.numChants > 0 check for backwards compatibility
     if (_user && _user.hasChanted() || server.isAdmin(interaction.member.id)) {
       const row = new MessageActionRow()
