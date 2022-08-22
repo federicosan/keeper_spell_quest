@@ -7,6 +7,8 @@ const { batch } = require('./game/batch')
 const { server } = require('./server')
 const Database = require("@replit/database");
 const { MongoClient } = require('mongodb')
+const express = require('express')
+
 const database = new Database()
 const dotenv = require('dotenv')
 dotenv.config()
@@ -97,6 +99,19 @@ mongo.connect(async err => {
   console.log("logging in")
   client.login(process.env.TOKEN)
   return
+})
+
+
+// handle gcloud health check
+const app = express()
+const port = 8080
+
+app.get('/', (req, res) => {
+  res.send('alive')
+})
+
+app.listen(port, () => {
+  console.log(`listening on port ${port}`)
 })
 
 setTimeout(() => {
