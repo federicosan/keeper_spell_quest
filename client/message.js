@@ -92,7 +92,7 @@ async function handleChant(msg, noReply) {
       return
     }
     
-    await server.kvstore.increment(`cult:${cult.id}`, totalChants)
+    await server.kvstore.increment(`cult:${cult.id}`, 1)
     let boost = await points.getActiveCultBoost(server, msg.author.id)
     console.log("boost:", boost)
     if (boost) {
