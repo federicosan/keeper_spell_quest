@@ -19,7 +19,23 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ["push", "gcr.io/$PROJECT_ID/keeper:$SHORT_SHA"]
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['run', 'deploy', 'keeper', '--image', 'gcr.io/$PROJECT_ID/keeper:$SHORT_SHA', '--region', 'us-west2', '--platform', 'managed', '--allow-unauthenticated']
+    args: 
+      [
+        'run', 
+        'deploy', 
+        'keeper', 
+        '--image', 
+        'gcr.io/$PROJECT_ID/keeper:$SHORT_SHA', 
+        '--region', 
+        'us-west2', 
+        '--platform', 
+        'managed', 
+        '--allow-unauthenticated',
+        '--cpu',
+        '2',
+        '--memory',
+        '500Mi'
+      ]
 images:
  - 'gcr.io/$PROJECT_ID/keeper'
 timeout: 600s
