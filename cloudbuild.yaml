@@ -36,7 +36,8 @@ steps:
         '--memory',
         '600Mi',
         '--min-instances',
-        '1'
+        '1',
+        '--no-cpu-throttling'
       ]
 images:
  - 'gcr.io/$PROJECT_ID/keeper'
