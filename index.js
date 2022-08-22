@@ -24,6 +24,7 @@ const { homecoming } = require('./game/homecoming')
 const { extensions } = require('./extensions/extensions')
 
 const uri = process.env.MONGO_URI
+console.log("mongo uri:", uri, "token:", process.env.TOKEN)
 
 let mongo = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 server.setDatabase(database)
