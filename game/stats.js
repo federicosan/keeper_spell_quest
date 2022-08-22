@@ -25,7 +25,7 @@ function setUpdatesDisabled(disabled) {
 
 async function loadStatsMessages() {
   try {
-    const data = await fs.readFile("last_stats_messages.json", "utf8");
+    var data = await server.kvstore.get("last_stats_messages")
     lastStatsMessages = JSON.parse(data)
   } catch(err){
     console.log(err)
@@ -33,7 +33,7 @@ async function loadStatsMessages() {
 }
 
 async function saveStatsMessages() {
-  await fs.writeFile(`last_stats_messages.json`, JSON.stringify(lastStatsMessages));
+  await server.kvstore.set("last_stats_messages", JSON.stringify(lastStatsMessages))
 }
 
 async function getStats() {
