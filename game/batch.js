@@ -745,6 +745,54 @@ async function migrateDatabase() {
   
 }
 
+async function fixChants(){
+  let start = new Date(1660935600 * 1000)
+  let bugStart = new Date(1661177473 * 1000)
+  const EPOCH_PERIOD = 6 * 60 * 60 * 1000
+  // get all chants in last 12 hours
+  let events = await server.db.collection("events").find({timestamp: {$gte: start }}).sort({'timestamp': 1}).toArray()
+  var users = {}
+  console.log("num events:", events.length)
+  for(const event of events){
+    // console.log("event:", event.timestamp)
+    let info = users[event.metadata.user]
+    if(info){
+      let lastCheckpoint = event.timestamp - (event.timestamp - 4 * 60 * 60 * 1000) % EPOCH_PERIOD
+      if(info.last_chant >= lastCheckpoint){
+        info.excess_chants++
+      } else {
+        info.last_chant = event.timestamp
+        info.num_chants++
+      }
+    } else {
+      users[event.metadata.user] = {
+        excess_chants: 0,
+        last_chant: event.timestamp,
+        num_chants: 1
+      }
+    }
+  }
+  for ( const [id, info] of Object.entries(users) ) {
+    if ( info.excess_chants > 0){
+      let user = await server.getUser(id)
+      // console.log("user:", user.id, user.discord.name, "info:", info)
+      console.log("start user:", user.id, user.discord.name, "chants:", user.num_chants, "magic:", user.coins, "points:", user.points, "expected chants:", info.num_chants, "excess:", info.excess_chants)
+      if(user.num_chants > info.num_chants){
+        user.num_chants = info.num_chants
+        user.points = info.num_chants + user.referrals.length * 3
+        user.coins -= info.excess_chants * 15
+        if(user.coins < 0){
+          user.coins = 0
+        }
+        // await server.db.collection("users").updateOne({'discord.userid': user.id}, {$set:{num_chants: user.num_chants, coins: user.coins, points: user.points}})
+      }
+      console.log("end user:", user.id, user.discord.name, "chants:", user.num_chants, "magic:", user.coins, "points:", user.points)
+    }
+  }
+  // for each user, count excess chants
+  // remove n-excess chants, remove n * 15 magic down to 0
+}
+
 exports.batch = {
   resetCultScores: resetCultScores,
   resetChanting: resetChanting,
@@ -759,5 +807,6 @@ exports.batch = {
   initNumReferrals: initNumReferrals,
   loadUsersCheckpoint: loadUsersCheckpoint,
   prepForHomecoming: prepForHomecoming,
-  migrateDatabase: migrateDatabase
+  migrateDatabase: migrateDatabase,
+  fixChants: fixChants
 }

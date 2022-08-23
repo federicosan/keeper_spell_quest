@@ -57,13 +57,40 @@ async function calculateCultReferrals(cult, server) {
   await server.kvstore.set(`cult:referrals:${cult.id}`, selfCount + sabotageCount)
 }
 
+async function calculateCultChants(cult, server) {
+  let agg = await server.db.collection("users").aggregate([
+    {
+      $match: {
+        "cult_id": cult.id,
+        'discord.userid': {$exists: true, $ne: ''}
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        total: {
+          $sum: "$num_chants"
+        }
+      }
+    }
+  ])
+  if (agg) {
+    let c = await agg.next()
+    if (c) {
+      await server.kvstore.set(`cult:${cult.id}`, c.total)
+    }
+  }
+}
+
 async function runReferralsCounter(server) {
   for (const cult of server.Cults.values()) {
     calculateCultReferrals(cult, server)
+    calculateCultChants(cult,server)
   }
-  var intervalId = setInterval(function() {
+  var intervalId = setInterval(async function() {
     for (const cult of server.Cults.values()) {
-      calculateCultReferrals(cult, server)
+      await calculateCultReferrals(cult, server)
+      await calculateCultChants(cult,server)
     }
   }, 20 * 60 * 1000)
 }
