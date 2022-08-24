@@ -130,7 +130,7 @@ class BeesSpell {
     }
     // delete spell
     await server.db.collection("items").remove({ id: this.spell.id })
-
+    cache.updateBeesTargets()
     try {
       interaction.editReply({ content: `${this.spell.name} was cast!`, components: [], ephemeral: true })
     } catch (error) {

@@ -140,6 +140,7 @@ class SummoningSpell {
         return
       }
       creature = await creatures.conjureFreezer(server, this.spell.power, member.id)
+      cache.updateFreezeTargets()
     } else {
       var cult = server.Cults.get(target)
       if (!cult) {
