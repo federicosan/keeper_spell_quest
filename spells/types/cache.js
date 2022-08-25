@@ -167,6 +167,8 @@ async function run() {
 
 exports.cache = {
   run: run,
+  updateFreezeTargets: updateFreezeTargets,
+  updateBeesTargets: updateBeesTargets,
   CultFreezeTargets: CultFreezeTargets,
   CultBeesTargets: CultBeesTargets
 }

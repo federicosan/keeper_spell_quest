@@ -3,6 +3,9 @@ const { batch } = require('./game/batch')
 const { server } = require('./server')
 const Database = require("@replit/database");
 const { MongoClient } = require('mongodb')
+
+const { creatures } = require('./spells/creatures')
+
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -21,9 +24,16 @@ client.once('ready', async () => {
     if(err){
       console.log("mgo connect err:", err)
     }
-    // await batch.fixChants()
-    // batch.prepForHomecoming(server)
-    // batch.migrate()
+    await server.loadDiscordUsers()
+    let _creatures = await server.db.collection("creatures").find({channelId: {$in: [
+      // '1012034190780416200',
+      '1011965364436996208',
+      '1011912340029050880'
+    ]}}).toArray()
+    for(const creature of _creatures) {
+      console.log("creature:", creature)
+      await creatures.killCreature(server, creature)
+    }
     return;
   })
 });

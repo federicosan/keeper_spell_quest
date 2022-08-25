@@ -4,7 +4,6 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter
 const { gaussian, weightedRandomSelect, adjustRarities, normalizeWeights, RandGenerator, hashString } = require('../utils/rand')
 const csv = require('csv-parser')
 const fs = require('fs')
-// const { Creature } = require('./spells/creatures')
 
 
 async function testMigrate() {
@@ -518,11 +517,11 @@ async function prepForHomecoming() {
       }
     })
   }
-  if (true) {
+  if (false) {
     console.log("resetting cult scores...")
     await resetCultScores()
   }
-  if (true) {
+  if (false) {
     console.log("killing all creatures...")
     await killAllCreatures()
     console.log("killed all creatures...")
