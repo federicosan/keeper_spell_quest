@@ -6,6 +6,7 @@ const { points } = require('../spells/points')
 const { fragments } = require('../spells/fragments')
 const { enter } = require('../discord/enter')
 const { spells } = require('../spells/spells')
+const { store } = require('../spells/store')
 const { cast } = require('../spells/cast')
 const { drop } = require('../spells/drop')
 const { handleSabotage } = require('../game/recruit')
@@ -95,7 +96,7 @@ async function init(server) {
         praiseCmd.toJSON(),
         believersCmd.toJSON(),
         beesCmd.toJSON(),
-        fragmentsCmd.toJSON()
+        // fragmentsCmd.toJSON()
         ]
       },
     );
@@ -128,6 +129,9 @@ async function handleInteraction(server, interaction) {
           }
         }
         break;
+      case "conjure_select":
+        await store.handleConjureSelect(interaction)
+        break
       case "cast_select_from":
         await cast.selectFrom(server, interaction)
         break
@@ -182,7 +186,7 @@ async function handleInteraction(server, interaction) {
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
       case 'conjure':
-        spells.handleConjureRequest(server, interaction)
+        store.handleConjureRequest(interaction)
         break
       case 'shame':
         handleShame(server, interaction)

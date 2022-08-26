@@ -192,40 +192,47 @@ async function commit(server, interaction) {
     _cleanup(server, interaction)
     return
   }
-  switch (item.type) {
-    case ATTACK_SPELL:
-      // pick target creature (in the future, include binding field or whatever)
-      var spell = new attack.spellType(item)
-      await spell.commit(server, interaction, castToCache)
-      break
-    case CONJURE_ALLY_SPELL:
-      var spell = new summon.spellType(item)
-      await spell.commit(server, interaction, castToCache)
-      break
-    case CONJURE_ENEMY_SPELL:
-      var spell = new summon.spellType(item)
-      await spell.commit(server, interaction, castToCache)
-      break
-    case CONJURE_FREEZE_SPELL:
-      var spell = new summon.spellType(item)
-      await spell.commit(server, interaction, castToCache)
-      break
-    case CULT_POINT_BOOST_SPELL:
-      var spell = new cp_boost.spellType(item)
-      await spell.commit(server, interaction, castToCache)
-      break
-    case MAGIC_BOOST_SPELL:
-      var spell = new magic_boost.spellType(item)
-      await spell.commit(server, interaction)
-      break
-    case CHEST_SPELL:
-      var spell = new chest.spellType(item)
-      await spell.commit(server, interaction)
-      return
-    case BEES_SPELL:
-      var spell = new bees.spellType(item)
-      await spell.commit(server, interaction, castToCache)
-      return
+  try {
+    switch (item.type) {
+      case ATTACK_SPELL:
+        // pick target creature (in the future, include binding field or whatever)
+        var spell = new attack.spellType(item)
+        await spell.commit(server, interaction, castToCache)
+        break
+      case CONJURE_ALLY_SPELL:
+        var spell = new summon.spellType(item)
+        await spell.commit(server, interaction, castToCache)
+        break
+      case CONJURE_ENEMY_SPELL:
+        var spell = new summon.spellType(item)
+        await spell.commit(server, interaction, castToCache)
+        break
+      case CONJURE_FREEZE_SPELL:
+        var spell = new summon.spellType(item)
+        await spell.commit(server, interaction, castToCache)
+        break
+      case CULT_POINT_BOOST_SPELL:
+        var spell = new cp_boost.spellType(item)
+        await spell.commit(server, interaction, castToCache)
+        break
+      case MAGIC_BOOST_SPELL:
+        var spell = new magic_boost.spellType(item)
+        await spell.commit(server, interaction)
+        break
+      case CHEST_SPELL:
+        var spell = new chest.spellType(item)
+        await spell.commit(server, interaction)
+        return
+      case BEES_SPELL:
+        var spell = new bees.spellType(item)
+        await spell.commit(server, interaction, castToCache)
+        return
+    }
+  } finally {
+    let spellTypeName = item.metaType ? item.metaType : item.type
+    let spellType = store.getSpellType(spellTypeName)
+    let user = server.getUser(interaction.member.id)
+    await spellType.issueCastPoints(user)
   }
   _cleanup(server, interaction)
 }

@@ -13,6 +13,7 @@ const { server } = require('../server.js')
 const { adventure } = require('./adventure')
 const { getAllPastReferralsSet, getAllPastChantsCount } = require('../utils/user')
 
+var PyramidSchemeEnabled = false
 // prices:
 // conjure -- set dust amount 10-30, effects likelihood of rare spell
 // common-spell: 10 dust
@@ -127,12 +128,23 @@ async function handleChant(server, user) {
   await addPointsToUser(server, user, CHANT_POINTS)
   
   // Pyramid scheme coin kickpagck
-  if (user.referred_by && user.referred_by !== "") {
-    let zealot = await server.db.collection("users").findOne({ "referral_key": user.referred_by })
-    if(zealot){
-      await addReferralCoinsToUser(server, zealot)
+  if (PyramidSchemeEnabled){
+    if (user.referred_by && user.referred_by !== "") {
+      let zealot = await server.db.collection("users").findOne({ "referral_key": user.referred_by })
+      if(zealot){
+        await addReferralCoinsToUser(server, zealot)
+      }
     }
   }
+}
+
+async function handleCastPoints(server, user, points) {
+  console.log("points handleChant user:", user.discord.userid)
+  user.num_cast_points = user.num_cast_points ? user.num_cast_points+points : points
+  user.points = user.points ? user.points + points : points
+  await server.db.collection("users").updateOne({ 'address': user.address }, {
+    $set: { points: user.points, num_cast_points: user.num_cast_points }
+  })
 }
 
 async function handleFragmentsChant(server, userId, cult, isSabotaged, saboteurs) {
@@ -321,6 +333,7 @@ exports.points = {
   handleRecruitment: handleRecruitment,
   handleChant: handleChant,
   handleFragmentsChant: handleFragmentsChant,
+  handleCastPoints: handleCastPoints,
   handleUserStatsInteraction: handleUserStatsInteraction,
   getUserStats: getUserStats,
   getActiveMagicBoost: getActiveMagicBoost,

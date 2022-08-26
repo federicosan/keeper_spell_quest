@@ -9,9 +9,9 @@ const {
   CONJURE_ALLY_SPELL,
   CONJURE_FREEZE_SPELL,
   ATTACK_SPELL,
+  STRONG_ATTACK_SPELL,
   MAGIC_BOOST_SPELL,
   CULT_POINT_BOOST_SPELL,
-  ABDUCT_SPELL,
   CHEST_SPELL,
   BEES_SPELL
 } = require('./constants.js')
@@ -19,14 +19,15 @@ const { getStats } = require('../game/stats')
 const { gaussian, weightedRandomSelect, adjustRarities, normalizeWeights, RandGenerator, hashString } = require('../utils/rand')
 
 var SPELL_RARITIES = [
-  { value: BEES_SPELL, weight: 2 },
-  { value: CONJURE_ENEMY_SPELL, weight: 4 },
-  { value: CONJURE_ALLY_SPELL, weight: 4 },
-  { value: CONJURE_FREEZE_SPELL, weight: 3 },
-  { value: CHEST_SPELL, weight: 5 },
+  { value: BEES_SPELL, weight: 4 },
+  { value: CONJURE_ENEMY_SPELL, weight: 1 },
+  { value: CONJURE_ALLY_SPELL, weight: 1 },
+  { value: CONJURE_FREEZE_SPELL, weight: 1 },
+  { value: CHEST_SPELL, weight: 10 },
   { value: MAGIC_BOOST_SPELL, weight: 4 },
-  { value: CULT_POINT_BOOST_SPELL, weight: 6 },
-  { value: ATTACK_SPELL, weight: 25 }
+  { value: CULT_POINT_BOOST_SPELL, weight: 10 },
+  { value: ATTACK_SPELL, weight: 25 },
+  { value: STRONG_ATTACK_SPELL, weight: 15 }
 ]
 
 function _randomness(p, expected) {

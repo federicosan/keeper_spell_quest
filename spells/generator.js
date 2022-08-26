@@ -71,7 +71,7 @@ class SpellGenerator {
     if (greatness >= 16 && greatness % 2 == 0) {
       out += " " + this.suffixes[randomizer.rndInt() % this.suffixes.length]
     }
-    if (greatness >= 18 && greatness % 2 == 0) {
+    if (greatness >= 19) {
       out = this.gods[randomizer.rndInt() % this.gods.length] + "'s " + out
     }
     return out

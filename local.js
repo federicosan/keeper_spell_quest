@@ -24,7 +24,7 @@ client.once('ready', async () => {
     if(err){
       console.log("mgo connect err:", err)
     }
-    await batch.prepForHomecoming()
+    await batch.migrate()
   })
 });
 

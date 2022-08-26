@@ -9,6 +9,8 @@ const { magic_boost } = require('./types/magic_boost')
 const { attack } = require('./types/attack')
 
 const {
+  CONJURE_ANCIENT_ENEMY_SPELL,
+  CONJURE_ANCIENT_ALLY_SPELL,
   CONJURE_ENEMY_SPELL,
   CONJURE_ALLY_SPELL,
   CONJURE_FREEZE_SPELL,
@@ -16,7 +18,8 @@ const {
   MAGIC_BOOST_SPELL,
   CULT_POINT_BOOST_SPELL,
   CHEST_SPELL,
-  BEES_SPELL
+  BEES_SPELL,
+  RANDOM_SPELL
 } = require('./constants.js')
 const { points } = require('./points')
 const { objects } = require('./objects')

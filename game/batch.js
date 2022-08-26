@@ -166,7 +166,7 @@ class BinPackCults {
         }
       }
     }
-    console.log("this.min:", this.min)
+    // console.log("this.min:", this.min)
     this.cults[this.min].addUser(user)
   }
 
@@ -229,7 +229,7 @@ async function shuffleUsersKeepCults() {
       cults.insertToCult(user, user.cult_id)
       n++
     } else {
-      console.log("unassigned user:", user)
+      // console.log("unassigned user:", user)
       cults.insert(user)
     }
   }
@@ -317,8 +317,9 @@ class UserHistoryEntry {
     this.cult_id = user.cult_id
     this.referrals = user.referrals
     this.points = user.points
-    this.coins = user.coins
-    this.num_chants = user.num_chants
+    this.coins = user.coins ? user.coins : 0
+    this.num_chants = user.num_chants ? user.num_chants : 0
+    this.num_cast_points = user.num_cast_points ? user.num_cast_points : 0
     this.num_referral_chants = user.num_referral_chants ? user.num_referral_chants : 0
   }
 }
@@ -386,7 +387,7 @@ async function resetUserPointsAndMagic(date) {
     // get all spells
     let c = await server.db.collection("items").count({ owner: user.discord.userid })
     if (c && c > 0) {
-      user.coins += c * 15
+      user.coins += c * 10
     }
     await server.db.collection("users").updateOne({ 'discord.userid': user.discord.userid }, { $set: { points: 0, num_chants: 0, referrals: [], coins: user.coins, history: user.history, referral_target_cult_id: '' } })
   }
@@ -567,17 +568,15 @@ async function ensureUserCultRoleAssigned(date) {
 }
 
 async function migrate() {
-  let date = new Date("2022-08-19T04:01:02.825Z")
+  let date = new Date("2022-08-25T22:26:40.664Z")
   console.log("date:", date)
   // await checkpoint(date)
 
   await server.loadDiscordUsers()
   // await cleanCultRoles()
   // assign new cults
-  if (false) {
+  if (true) {
     let shuffledCults = await shuffleUsersKeepCults()
-    return
-    let cults = server.Cults.values()
     for (var i = 0; i < shuffledCults.cults.length; i++) {
       let shuffledCult = shuffledCults.cults[i]
       let cult = server.Cults.get(shuffledCult.id)
@@ -608,14 +607,21 @@ async function migrate() {
       }
     }
   }
-  // console.log("resetting cult scores...")
-  // await resetCultScores()
-  // console.log("cult scores reset")
+  
+  if (false){
+    console.log("resetting cult scores...")
+    await resetCultScores()
+    console.log("cult scores reset")
+    
+    console.log("resetting user points...")
+    await resetUserPointsAndMagic(date)
+    console.log("updating cult role names...")
+  }
+  
+  
   // console.log("killing all creatures...")
   // await killAllCreatures()
-  console.log("resetting user points...")
-  await resetUserPointsAndMagic(date)
-  console.log("updating cult role names...")
+
   // await updateCultRoleNamesAndChannels()
 }
 

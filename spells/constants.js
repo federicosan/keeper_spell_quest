@@ -12,6 +12,7 @@ exports.CONJURE_ENEMY_SPELL = "conjure_enemy_spell" // power
 exports.CONJURE_ALLY_SPELL = "conjure_ally_spell" // power
 exports.CONJURE_FREEZE_SPELL = "conjure_freeze_spell"
 exports.ATTACK_SPELL = "attack_spell" // damage
+exports.STRONG_ATTACK_SPELL = "strong_attack_spell"
 exports.MAGIC_BOOST_SPELL = "magic_boost_spell" // boost
 exports.CULT_POINT_BOOST_SPELL = "cp_boost_spell" // boost
 // exports.ABDUCT_SPELL = "abduct_spell"

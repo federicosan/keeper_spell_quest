@@ -163,6 +163,8 @@ class CreatureGenerator {
   }
 
   generate(power, type) {
+    const healthAmp = 4
+    const strengthAmp = 1.5
     var name = this._getName(power)
     // var strength = Math.max(1, Math.round( 0.75 * (power * 25 + (Math.random() * power * 5) + (Math.random() * 2))))
     var strength = Math.max(1, Math.round(0.5 * (power * 20 + (Math.random() * power * 3) + (Math.random() * 2))))
@@ -175,10 +177,11 @@ class CreatureGenerator {
       health += 4;
     }
     if (power >= nonAncientLikelihood) {
-      strength += 4;
-      health += 10;
+      strength += (power/nonAncientLikelihood) * 4 + 4;
+      health += (power/nonAncientLikelihood) * 10 + 4;
     }
-    strength = Math.max(1, Math.round(strength / 3))
+    strength = Math.round(Math.max(1, Math.round(strength / 3)) * strengthAmp)
+    health = Math.round(health * healthAmp)
     return new Creature(strength, health, name, type)
   }
 }
