@@ -1,3 +1,5 @@
+const { MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton } = require('discord.js')
+
 const { server } = require('../server')
 const { emoji } = require('../utils/emoji')
 const { mariokart } = require('./mariokart')
@@ -97,7 +99,7 @@ var SPELLS = {
     STRONG_ATTACK_SPELL_PRICE,
     0,
     ATTACK_SPELL
-  ).setEmoji({name: '💣'}),
+  ).setEmoji({name: '🪓'}),
   [CONJURE_FREEZE_SPELL]: new SpellType(
     CONJURE_FREEZE_SPELL,  
     `chains of abduction`,
@@ -185,7 +187,12 @@ for (const [_, v] of Object.entries(SPELLS)){
 
 async function handleConjureRequest(interaction) {
   console.log("handle conjure request")
-  await interaction.deferReply({ ephemeral: true })
+  try {
+    await interaction.deferReply({ ephemeral: true })
+  } catch(err){
+    console.log("error:", err)
+    return
+  }
   let user = await server.db.collection("users").findOne({ "discord.userid": interaction.member.id })
   if (!user) {
     await interaction.editReply({ content: 'user not found, talk to @hypervisor...', ephemeral: true })
@@ -208,44 +215,44 @@ async function handleConjureRequest(interaction) {
         value: v.id,
         emoji: v.emoji,
         label: v.name,
-        description: `${v.price}${emoji.magic} | ${v.description}`
+        description: `${v.price}✨ | ${v.description}`
       })
     }
   }
   
   let embed = new MessageEmbed()
-    .setTitle("conjure a spell ")
-    .setColor("#FFFFE0")
     .setDescription(`you have <:magic:975922950551244871>${user.coins}. spend it wisely...`)
   const row = new MessageActionRow()
     .addComponents(
       new MessageSelectMenu()
           .setCustomId('conjure_select')
-          .setPlaceholder('select spell')
+          .setPlaceholder('conjure a spell')
           .addOptions(options)
     )
-  const secondRow = new MessageActionRow()
-    .addComponents(
-      new MessageButton()
-        .setCustomId('default_cancel')
-        .setLabel('cancel')
-        .setStyle('SECONDARY')
-    )
+  // const secondRow = new MessageActionRow()
+  //   .addComponents(
+  //     new MessageButton()
+  //       .setCustomId('default_cancel')
+  //       .setLabel('cancel')
+  //       .setStyle('SECONDARY')
+  //   )
   console.log("editing reply")
-  await interaction.editReply({ content: 'continue', embeds: [embed], components: [row, secondRow], ephemeral: true })
+  await interaction.editReply({ content: `you have <:magic:975922950551244871>${user.coins}. spend it wisely...`, embeds: [], components: [row], ephemeral: true })
   console.log("edited reply")
 }
 
 function spellMessageEmbed(spell) {
-  console.log("descrption:", SpellDescriptions[spell.type])
+  let spellType = SPELLS[spell.metaType ? spell.metaType : spell.type]
+  console.log("descrption:",  spellType.description)
   return new MessageEmbed()
     .setTitle(spell.name)
     .setColor("#FFFFE0")
-    .setDescription(SpellDescriptions[spell.type])
+    .setDescription(spellType.description)
 }
 
 async function conjure(server, spellType, member) {
   let roles = await mariokart.rollDice(server, member, 2)
+  let price = spellType.price
   if(spellType.id == RANDOM_SPELL){
     spellType = SPELLS[mariokart.selectSpell(roles[0]).value]
   }
@@ -299,7 +306,7 @@ async function conjure(server, spellType, member) {
     return error
   }
   try {
-    await server.db.collection("users").update({ 'discord.userid': member.id }, { $inc: { coins: -DEFAULT_SPELL_PRICE } })
+    await server.db.collection("users").update({ 'discord.userid': member.id }, { $inc: { coins: -price } })
   } catch (error) {
     console.log(error)
     return error

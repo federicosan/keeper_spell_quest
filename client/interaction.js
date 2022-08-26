@@ -186,7 +186,11 @@ async function handleInteraction(server, interaction) {
   if (interaction.isCommand()) {
     switch (interaction.commandName) {
       case 'conjure':
-        store.handleConjureRequest(interaction)
+        try {
+          store.handleConjureRequest(interaction)
+        }catch(err){
+          console.log("error:", err)
+        }
         break
       case 'shame':
         handleShame(server, interaction)
