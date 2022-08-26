@@ -4,7 +4,7 @@ const { toHrMin } = require('../utils/time')
 const { IS_RESTARTING } = require('./state')
 
 const lastChapterEndTime = 1660935600 * 1000
-const chapterStartTime = 1661547600 * 1000 
+const chapterStartTime = 1661551200 * 1000 
 const nextChapaterEndTime = 1662152400 * 1000 
 
 var HasCheckpointed = false

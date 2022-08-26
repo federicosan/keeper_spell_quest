@@ -647,27 +647,43 @@ async function initNumReferrals() {
   })
 }
 
-function loadUsersCheckpoint(basepath) {
-  let cultId = '973532570266533898'
+async function assignKeys() {
+  // load cults
+  
+//   1007387236343492638,culivanis,1.802690441780327,549.20,73
+// 972639993635938344,minas kin,2.088296402119564,601.60,70
+// 973532685479854110,orodruin,1.7238164782123928,496.60,70
+// 973532570266533898,vos silan,1.0164030561803126,276.20,67
+
+  // assign 50 keys to winners
+  // assgin 30 keys to loser cults, weighted by cult scores relative to each other
+  // assign zealot keys manually
+  // await server.db.collection("users").updateOne({ 
+  //   'discord.userid': user.value 
+  // }, { $inc: { allowlists: 1 } })
+  let cultId = '972639993635938344'
   let users = []
-  var basepath = `./data/checkpoints/checkpoint-2022-07-27T19:04:15.369Z-users.csv`
+  let cultUsers = { '1007387236343492638': [], '972639993635938344': [], '973532685479854110': [], '973532570266533898': []}
+  var basepath = `./data/checkpoints/checkpoint-2022-08-19T04-01-02.825Z-users.csv`
   fs.createReadStream(basepath)
     .pipe(csv())
     .on('data', (row) => {
       console.log(row);
-      if (row.cult == cultId && row.id !== "" && row.coins != 'NaN') {
-        users.push({
+      if ( row.id !== "" && row.coins != 'NaN') {
+        let _user = {
           value: row.id,
           weight: row.points == 0 ? 1 : Math.pow(row.points * 2, 1.2),
           points: row.points,
           keys: 0
-        })
+        }
+        cultUsers[row.cult].push(_user)
       }
     })
     .on('end', async () => {
+      let users = cultUsers[cultId]
       console.log('CSV file successfully processed');
       normalizeWeights(users)
-      for (var i = 0; i < 94; i++) {
+      for (var i = 0; i < 50; i++) {
         var next = weightedRandomSelect(Math.random(), users)
         next.keys++
       }
@@ -678,37 +694,39 @@ function loadUsersCheckpoint(basepath) {
           continue
         }
         console.log("userid:", user.value, "numkeys:", user.keys)
-        await server.db.collection("users").updateOne({ 'discord.userid': user.value }, { $inc: { allowlists: user.keys } })
+        // await server.db.collection("users").updateOne({ 'discord.userid': user.value }, { $inc: { allowlists: user.keys } })
       }
       console.log("done")
+      
+      
     });
 }
 
-async function assignKeys() {
-  let cultId = '973532685479854110'
-  // load users
-  let users = await server.db.collection("users").find({ 'discord.userid': { $exists: true } })
-  let weh = await users.map(user => {
-    return {
-      id: user.discord.userid,
-      address: user.address,
-      cult: user.cult_id,
-      points: user.points,
-      chants: user.num_chants,
-      conversions: user.referrals ? user.referrals.length : 0,
-      coins: user.coins
-    }
-  }).toArray()
-  var SPELL_RARITIES = [
-    { value: CONJURE_ENEMY_SPELL, weight: 3 },
-    { value: CONJURE_ALLY_SPELL, weight: 3 },
-    { value: CONJURE_FREEZE_SPELL, weight: 3 },
-    { value: CHEST_SPELL, weight: 6 },
-    { value: CULT_POINT_BOOST_SPELL, weight: 10 },
-    { value: MAGIC_BOOST_SPELL, weight: 7 },
-    { value: ATTACK_SPELL, weight: 25 }
-  ]
-}
+// async function assignKeys() {
+//   let cultId = '973532685479854110'
+//   // load users
+//   let users = await server.db.collection("users").find({ 'discord.userid': { $exists: true } })
+//   let weh = await users.map(user => {
+//     return {
+//       id: user.discord.userid,
+//       address: user.address,
+//       cult: user.cult_id,
+//       points: user.points,
+//       chants: user.num_chants,
+//       conversions: user.referrals ? user.referrals.length : 0,
+//       coins: user.coins
+//     }
+//   }).toArray()
+//   var SPELL_RARITIES = [
+//     { value: CONJURE_ENEMY_SPELL, weight: 3 },
+//     { value: CONJURE_ALLY_SPELL, weight: 3 },
+//     { value: CONJURE_FREEZE_SPELL, weight: 3 },
+//     { value: CHEST_SPELL, weight: 6 },
+//     { value: CULT_POINT_BOOST_SPELL, weight: 10 },
+//     { value: MAGIC_BOOST_SPELL, weight: 7 },
+//     { value: ATTACK_SPELL, weight: 25 }
+//   ]
+// }
 
 async function migrateDatabase() {
   var _getReplPoints = async (key, id) => {
@@ -804,7 +822,7 @@ exports.batch = {
   ensureUserCultRoleAssigned: ensureUserCultRoleAssigned,
   markWL: markWL,
   initNumReferrals: initNumReferrals,
-  loadUsersCheckpoint: loadUsersCheckpoint,
+  assignKeys: assignKeys,
   prepForHomecoming: prepForHomecoming,
   migrateDatabase: migrateDatabase,
   fixChants: fixChants
