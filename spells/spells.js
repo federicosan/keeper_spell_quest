@@ -15,7 +15,6 @@ const {
   ATTACK_SPELL,
   MAGIC_BOOST_SPELL,
   CULT_POINT_BOOST_SPELL,
-  ABDUCT_SPELL,
   CHEST_SPELL,
   BEES_SPELL
 } = require('./constants.js')
@@ -29,7 +28,6 @@ var SpellDescriptions = {
   [MAGIC_BOOST_SPELL]: "temporarily boost the magic you earn (+1-6 / 24 hours)",
   [CULT_POINT_BOOST_SPELL]: "temporarily boost the cult points you generate (1.2-4X / 24 hours)",
   [ATTACK_SPELL]: "deal damage to a target",
-  [ABDUCT_SPELL]: "imprison a member of an opposing cult, preventing them from playing until they are freed",
   [CHEST_SPELL]: "conjure a chest that can be unlocked with help from your fellow cultists",
   [CONJURE_FREEZE_SPELL]: "abduct enemy cultists and prevent them from chanting",
   [BEES_SPELL]: "unleash bees on an unsuspecting cultist"
