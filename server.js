@@ -127,17 +127,26 @@ class Server {
       return null
     }
     let channel = this.client.channels.cache.get(channelId)
-    return await channel.messages.fetch(messageId)
+    try {
+      return await channel.messages.fetch(messageId)
+    } catch(err){
+      console.log("error:", err)
+    }
+    return null
   }
 
   async updateCachedMessage(channelId, key, value) {
     let messageId = await this.kvstore.get(`${key}:${channelId}`)
     let channel = this.client.channels.cache.get(channelId)
     if (messageId) {
-      let msg = await channel.messages.fetch(messageId)
-      if (msg) {
-        msg.edit(value)
-        return msg
+      try {
+        let msg = await channel.messages.fetch(messageId)
+        if (msg) {
+          msg.edit(value)
+          return msg
+        }
+      } catch(err){
+        console.log("error:", err)
       }
     }
     let message = await channel.send(value)
@@ -153,23 +162,23 @@ class Server {
 
 const spellQuestServer = new Server("970091626779254874",
   new Cults({
-    "1007387236343492638": new Cult(
-      "culivanis",
-      "1007387236343492638",
-      "ashmin col thalias",
-      "🕯",
-      "🕯",
-      // roleId
-      "1007386782767267960",
-      // statsChannel
-      "1007387977770610878",
-      // proposalsChannel
-      "1007387876369121380",
-      // emoji id
-      null,
-      // bonus points
-      0
-    ),
+    // "1007387236343492638": new Cult(
+    //   "culivanis",
+    //   "1007387236343492638",
+    //   "ashmin col thalias",
+    //   "🪐",
+    //   "🪐",
+    //   // roleId
+    //   "1007386782767267960",
+    //   // statsChannel
+    //   "1007387977770610878",
+    //   // proposalsChannel
+    //   "1007387876369121380",
+    //   // emoji id
+    //   null,
+    //   // bonus points
+    //   0
+    // ),
     "972639993635938344": new Cult(
       "minas kin",
       "972639993635938344",

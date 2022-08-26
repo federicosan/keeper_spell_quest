@@ -1,1 +1,1 @@
-exports.IS_RESTARTING = false
+exports.IS_RESTARTING = true

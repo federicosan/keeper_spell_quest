@@ -24,17 +24,7 @@ client.once('ready', async () => {
     if(err){
       console.log("mgo connect err:", err)
     }
-    await server.loadDiscordUsers()
-    let _creatures = await server.db.collection("creatures").find({channelId: {$in: [
-      // '1012034190780416200',
-      '1011965364436996208',
-      '1011912340029050880'
-    ]}}).toArray()
-    for(const creature of _creatures) {
-      console.log("creature:", creature)
-      await creatures.killCreature(server, creature)
-    }
-    return;
+    await batch.prepForHomecoming()
   })
 });
 
