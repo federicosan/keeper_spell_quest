@@ -1,7 +1,7 @@
 const { server } = require('../server')
 const { StringMutex } = require('../utils/mutex')
 
-const HomecomingActive = true
+const HomecomingActive = false
 const HomecomingChannelId = '1004448290596724786'
 const UserMutex = new StringMutex()
 let numCults = server.Cults.values().length

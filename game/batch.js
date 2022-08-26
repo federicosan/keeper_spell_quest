@@ -575,8 +575,9 @@ async function migrate() {
   await server.loadDiscordUsers()
   // await cleanCultRoles()
   // assign new cults
-  if (true) {
+  if (false) {
     let shuffledCults = await shuffleUsersKeepCults()
+    return
     for (var i = 0; i < shuffledCults.cults.length; i++) {
       let shuffledCult = shuffledCults.cults[i]
       let cult = server.Cults.get(shuffledCult.id)
@@ -608,7 +609,7 @@ async function migrate() {
     }
   }
   
-  if (false){
+  if (true){
     console.log("resetting cult scores...")
     await resetCultScores()
     console.log("cult scores reset")
