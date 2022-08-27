@@ -202,7 +202,7 @@ async function createChest(power, targetCult, creatorId) {
   chest.id = await server.getNextSequenceValue("objects")
   console.log("got next objects seq value")
   chest.setTarget({ type: TARGET_CULT_TYPE, id: targetCult.id })
-  chest.channelId = targetCult.id
+  chest.channelId = targetCult.channels.ChestsChannel
   await server.db.collection("objects").insertOne(chest)
   await chest.updateMsg(server)
   return chest

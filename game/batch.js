@@ -609,7 +609,7 @@ async function migrate() {
     }
   }
   
-  if (true){
+  if (false){
     console.log("resetting cult scores...")
     await resetCultScores()
     console.log("cult scores reset")

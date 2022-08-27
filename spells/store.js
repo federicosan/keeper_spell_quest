@@ -193,13 +193,14 @@ async function handleConjureRequest(interaction) {
     console.log("error:", err)
     return
   }
+  console.log("handling store conjure request")
   let user = await server.db.collection("users").findOne({ "discord.userid": interaction.member.id })
   if (!user) {
     await interaction.editReply({ content: 'user not found, talk to @hypervisor...', ephemeral: true })
     return
   }
   if (user.coins < MinSpellPrice) {
-    await interaction.editReply({ content: `not enough magic <:magic:975922950551244871>. the least expensive conjure costs <:magic:975922950551244871>${DEFAULT_SPELL_PRICE} magic. you have <:magic:975922950551244871>${user.coins},,,`, ephemeral: true })
+    await interaction.editReply({ content: `not enough magic <:magic:975922950551244871>. the least expensive conjure costs <:magic:975922950551244871>${MinSpellPrice} magic. you have <:magic:975922950551244871>${user.coins},,,`, ephemeral: true })
     return
   }
   let userCult = server.Cults.userCult(interaction.member)
@@ -346,7 +347,7 @@ async function handleConjureSelect(interaction) {
       return
     }
     if (user.coins < spellType.price) {
-      await interaction.editReply({ content: `not enough magic <:magic:975922950551244871>. ${spellType.name} costs <:magic:975922950551244871>${spell.price} magic. you have <:magic:975922950551244871>${user.coins},,,`, components: [], ephemeral: true })
+      await interaction.editReply({ content: `not enough magic <:magic:975922950551244871>. ${spellType.name} costs <:magic:975922950551244871>${spellType.price} magic. you have <:magic:975922950551244871>${user.coins},,,`, components: [], ephemeral: true })
       return
     }
     let spell = await conjure(server, spellType, interaction.member)

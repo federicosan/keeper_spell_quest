@@ -143,7 +143,11 @@ function setClientTriggers() {
     if (IS_RESTARTING && !server.isAdmin(interaction.member.id)) {
       return
     }
-    await interactionHandler.handle(server, interaction)
+    try {
+      await interactionHandler.handle(server, interaction)
+    } catch(err){
+      console.log(err)
+    }
   })
 
   client.on('shardError', (err) => {

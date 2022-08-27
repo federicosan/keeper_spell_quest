@@ -7,7 +7,7 @@ const {
 } = require('../spells/constants.js')
 
 class Cult {
-  constructor(name, id, chant, emoji, discordEmoji, roleId, statsChannel, proposalsChannel, emojiId, bonusPoints) {
+  constructor(name, id, chant, emoji, discordEmoji, roleId, statsChannel, proposalsChannel, channels, emojiId, bonusPoints) {
     this.name = name
     this.id = id
     this.chant = chant
@@ -16,6 +16,7 @@ class Cult {
     this.roleId = roleId
     this.statsChannel = statsChannel
     this.proposalsChannel = proposalsChannel
+    this.channels = channels
     this.emojiId = emojiId
     this.bonusPoints = bonusPoints
   }

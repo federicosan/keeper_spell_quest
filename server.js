@@ -174,6 +174,9 @@ const spellQuestServer = new Server("970091626779254874",
     //   "1007387977770610878",
     //   // proposalsChannel
     //   "1007387876369121380",
+      // {
+      //   ChestsChannel: ''
+      // },
     //   // emoji id
     //   null,
     //   // bonus points
@@ -188,6 +191,9 @@ const spellQuestServer = new Server("970091626779254874",
       "973761425677897759",
       "977052635603554324",
       "977642272348864572",
+      {
+        ChestsChannel: '1012876161421946941'
+      },
       // emoji id
       null,
       // bonus points
@@ -202,6 +208,9 @@ const spellQuestServer = new Server("970091626779254874",
       "973810497742843924",
       "977060905089105941",
       "977642383040716801",
+      {
+        ChestsChannel: '1012876251473649684'
+      },
       // emoji id
       null,
       // bonus points
@@ -216,6 +225,9 @@ const spellQuestServer = new Server("970091626779254874",
     //   "973810144758616145",
     //   "977052689768804382",
     //   "977642330750353479",
+      // {
+      //   ChestsChannel: ''
+      // },
     //   // emoji id
     //   null,
     //   // bonus points

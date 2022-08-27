@@ -17,6 +17,7 @@ const { summon } = require('./types/summon')
 const { cp_boost } = require('./types/cp_boost')
 const { magic_boost } = require('./types/magic_boost')
 const { attack } = require('./types/attack')
+const { store } = require('./store')
 
 var castCache = {}
 var castToCache = {}
