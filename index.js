@@ -21,6 +21,7 @@ var exec = require('child_process').exec
 const { spells_game } = require('./spells/controller')
 const { clock } = require('./game/clock')
 const { homecoming } = require('./game/homecoming')
+const { sortinghat } = require('./discord/sortinghat')
 const { extensions } = require('./extensions/extensions')
 
 const uri = process.env.MONGO_URI
@@ -85,6 +86,7 @@ client.once('ready', async () => {
   // await batch.migrate()
   interactionHandler.init(server)
   await spells_game.init(server)
+  await sortinghat.init()
   await homecoming.init()
   await extensions.init()
   runReferralsCounter(server)

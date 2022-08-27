@@ -1,5 +1,6 @@
 const { IS_RESTARTING } = require('../game/state')
 const { homecoming } = require('../game/homecoming')
+const { sortinghat } = require('../discord/sortinghat')
 const { vote } = require('../game/vote')
 const { objects } = require('../spells/objects')
 const { server } = require('../server')
@@ -13,8 +14,17 @@ exports.handleReaction = async function(reaction, user) {
   } catch (error) {
     console.log(error)
   }
+  
   if (IS_RESTARTING && !server.isAdmin(user.id)) {
     return
+  }
+  try {
+    let handled = await sortinghat.addReaction(reaction, user)
+    if (handled) {
+      return
+    }
+  } catch (error) {
+    console.log(error)
   }
   try {
     let handled = await vote.addReaction(server, reaction, user)

@@ -105,7 +105,16 @@ class Cult {
 
     return totalChants + sabotageRefs * SABOTAGE_POINTS + selfRefs * RECRUIT_CULT_POINTS + this.bonusPoints + points + amplifiedPoints + miscPoints + fragmentsPoints
   }
-
+  
+  async getScore(server) {
+    let totalChants = await this.countTotalChants(server.kvstore)
+    let population = await server.kvstore.get(`cult:members:${this.id}`)
+    if(population == 0) {
+      return 0
+    }
+    return totalChants / Math.pow(population, 1.333)
+  }
+  
   async resetPoints(kvstore) {
     await kvstore.set(`cult:referrals:sabotage:${this.id}`, 0)
     await kvstore.set(`cult:referrals:self:${this.id}`, 0)

@@ -11,7 +11,7 @@ const {
 } = require('./constants.js')
 const { server } = require('../server.js')
 const { adventure } = require('./adventure')
-const { getAllPastReferralsSet, getAllPastChantsCount } = require('../utils/user')
+const { getAllPastReferralsSet, getAllPastChantsCount, getAllPastPoints } = require('../utils/user')
 
 var PyramidSchemeEnabled = false
 // prices:
@@ -199,11 +199,11 @@ async function getUserStats(server, interaction, userId) {
   let cpBoost = await getActiveCultBoost(server, userId)
   let allPastReferrals = getAllPastReferralsSet(user)
   let pastChants = getAllPastChantsCount(user)
-  let msg = `<:magic:975922950551244871> ${user.coins ? user.coins : 0} 🗝${user.allowlists}`
+  let allPoints = getAllPastPoints(user)
+  let msg = `<:magic:975922950551244871> ${user.coins ? user.coins : 0} 🗝${user.allowlists} XP${allPoints} (ch. xp: ${user.points})`
   msg += `\n𐂥 cult point multiplier: x${cpBoost ? cpBoost : 1}\n<:magic:975922950551244871> magic boost: +${magicBoost ? magicBoost : 0}`
     msg+= `\n\n**this chapter**\nrecruits: ${user.referrals ? user.referrals.length : 0} chants: ${user.num_chants ? user.num_chants : 0}`
   msg += `\n\n**all chapters**\nrecruits: ${allPastReferrals.size} chants: ${pastChants}`
-  //msg += `\n🗝${user.allowlists}`
   return msg
 }
 
