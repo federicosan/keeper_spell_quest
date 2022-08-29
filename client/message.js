@@ -14,7 +14,7 @@ const { FREEZE_TYPE } = require('../spells/constants')
 const { fragments } = require('../spells/fragments')
 const { homecoming } = require('../game/homecoming')
 
-const EPOCH_PERIOD = 6 * 60 * 60 * 1000
+const EPOCH_PERIOD = 4 * 60 * 60 * 1000
 
 var chantReactionLimiter = new RateLimiter(4, 60 * 1000)
 var UserMutex = new StringMutex()

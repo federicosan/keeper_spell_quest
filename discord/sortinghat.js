@@ -95,7 +95,7 @@ async function init() {
   // setInterval(() => {
   //   updateMessage()
   // }, 10 * 60 * 1000)
-  updateMessage()
+  // updateMessage()
   if (await server.getCachedMessage(SortingHatChannelId, 'sortinghat')) {
     return
   }

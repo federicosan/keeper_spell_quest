@@ -13,7 +13,8 @@ const { server } = require('../server.js')
 const { adventure } = require('./adventure')
 const { getAllPastReferralsSet, getAllPastChantsCount, getAllPastPoints } = require('../utils/user')
 
-var PyramidSchemeEnabled = false
+var PyramidSchemeEnabled = true
+
 // prices:
 // conjure -- set dust amount 10-30, effects likelihood of rare spell
 // common-spell: 10 dust

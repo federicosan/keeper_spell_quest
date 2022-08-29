@@ -16,7 +16,7 @@ class Creature {
     this.health = health
     this.name = name
     this.created = new Date()
-    this.attackPeriod = 6 * 60 * 60 * 1000
+    this.attackPeriod = 4 * 60 * 60 * 1000
     this.lastAttack = 0
     this.type = type
   }
