@@ -87,8 +87,8 @@ async function addPointsToUser(server, user, amount) {
   })
 }
 
-async function addReferralCoinsToUser(server, user) {
-  user.coins += RECRUIT_PYRAMID_SCHEME_COINS_C
+async function addReferralCoinsToUser(server, user, coins = RECRUIT_PYRAMID_SCHEME_COINS_C) {
+  user.coins += coins
   let boost = await getActiveMagicBoost(server, user.discord.userid)
   if (boost && boost > 0) {
     user.coins += boost
@@ -134,6 +134,12 @@ async function handleChant(server, user) {
       let zealot = await server.db.collection("users").findOne({ "referral_key": user.referred_by })
       if(zealot){
         await addReferralCoinsToUser(server, zealot)
+        if(zealot.referred_by && zealot.referred_by !== ""){
+          let parentZealot = await server.db.collection("users").findOne({ "referral_key": zealot.referred_by })
+          if(parentZealot){
+            await addReferralCoinsToUser(server, parentZealot, 1)
+          }
+        }
       }
     }
   }
