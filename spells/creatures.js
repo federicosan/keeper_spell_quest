@@ -163,7 +163,7 @@ class CreatureGenerator {
   }
 
   generate(power, type) {
-    const healthAmp = 4
+    const healthAmp = 2.5
     const strengthAmp = 1.5
     var name = this._getName(power)
     // var strength = Math.max(1, Math.round( 0.75 * (power * 25 + (Math.random() * power * 5) + (Math.random() * 2))))
