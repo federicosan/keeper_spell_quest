@@ -193,9 +193,17 @@ async function handleInteraction(server, interaction) {
         }
         break
       case 'shame':
+        if(interaction.channel.id == server.channels.EnterChannelId){
+          interaction.reply({ content: 'you can\'t praise in the enter channel', ephemeral: true })
+          return 
+        }
         handleShame(server, interaction)
         return
       case 'praise':
+        if(interaction.channel.id == server.channels.EnterChannelId){
+          interaction.reply({ content: 'you can\'t praise in the enter channel', ephemeral: true })
+          return 
+        }
         handlePraise(server, interaction)
         return
       case 'believers':

@@ -251,6 +251,7 @@ const spellQuestServer = new Server("970091626779254874",
   "978078135193071657",
   {
     DungeonSectionId: "988261012295794698",
+    EnterChannelId: "986712037633720390",
     AdventureLogChannelId: "989617981233451028",
     GameTimerChannelId: "999040396258717706"
   },
