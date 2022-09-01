@@ -1,3 +1,4 @@
+const { MessageEmbed } = require('discord.js')
 const { server } = require('../server')
 const { StringMutex } = require('../utils/mutex')
 
@@ -35,7 +36,7 @@ async function addReaction(reaction, user) {
         } catch(err) {
           console.log("response delete error:", err)
         }
-      }, 120 * 1000)
+      }, 60 * 1000)
       return true
     }
     let member = server.getMember(user.id)
