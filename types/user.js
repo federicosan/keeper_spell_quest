@@ -10,7 +10,9 @@ class User {
 class Cultist {
   constructor(dbuser){
     Object.assign(this, dbuser)
-    this.id = this.discord.userid
+    if(this.discord){
+      this.id = this.discord.userid
+    }
   }
   
   async lastChantedAt(server) {

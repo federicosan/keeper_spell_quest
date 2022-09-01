@@ -61,7 +61,10 @@ class Server {
   
   async getUser(id) {
     let user = await this.db.collection("users").findOne({ 'discord.userid': id })
-    return new Cultist(user)
+    if(user){
+      return new Cultist(user)
+    }
+    return null
   }
 
   async loadUser(id) {

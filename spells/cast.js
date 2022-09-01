@@ -233,7 +233,9 @@ async function commit(server, interaction) {
     let spellTypeName = item.metaType ? item.metaType : item.type
     let spellType = store.getSpellType(spellTypeName)
     let user = server.getUser(interaction.member.id)
-    await spellType.issueCastPoints(user)
+    if(user){
+      await spellType.issueCastPoints(user)
+    }
   }
   _cleanup(server, interaction)
 }
