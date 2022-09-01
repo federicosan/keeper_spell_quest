@@ -193,20 +193,24 @@ async function handleInteraction(server, interaction) {
         }
         break
       case 'shame':
-        if(interaction.channel.id == server.channels.EnterChannelId){
-          interaction.reply({ content: 'you can\'t praise in the enter channel', ephemeral: true })
+        if(interaction.channel.id == server.channels.EnterChannelId || interaction.channel.id == server.channels.AltarChannelId){
+          interaction.reply({ content: 'command not allowed in this channel', ephemeral: true })
           return 
         }
         handleShame(server, interaction)
         return
       case 'praise':
-        if(interaction.channel.id == server.channels.EnterChannelId){
-          interaction.reply({ content: 'you can\'t praise in the enter channel', ephemeral: true })
+        if(interaction.channel.id == server.channels.EnterChannelId || interaction.channel.id == server.channels.AltarChannelId){
+          interaction.reply({ content: 'command not allowed in this channel', ephemeral: true })
           return 
         }
         handlePraise(server, interaction)
         return
       case 'believers':
+        if(interaction.channel.id == server.channels.EnterChannelId || interaction.channel.id == server.channels.AltarChannelId) {
+          interaction.reply({ content: 'command not allowed in this channel', ephemeral: true })
+          return 
+        }
         handleBelievers(server, interaction)
         return
       case 'bees':
