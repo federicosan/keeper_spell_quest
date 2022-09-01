@@ -1,4 +1,4 @@
-const { client } = require('./client/client')
+const { clients, KeeperClient, TRIGGER_MODE } = require('./client/client')
 const { batch } = require('./game/batch')
 const { server } = require('./server')
 const Database = require("@replit/database");
@@ -16,18 +16,22 @@ server.setDatabase(database)
 let mongo = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 server.setDB(mongo.db("general"))
 
-var loggedIn = false
-client.once('ready', async () => {
-	console.log('Ready!');
-  loggedIn = true
-  mongo.connect(async err => {
-    if(err){
-      console.log("mgo connect err:", err)
-    }
-    await updater.cleanRoles()
-    // await cleanupChannel('1012894283499569203', '1012903031441993748')
-  })
-});
+const allReadyCallback = async () => {
+  await updater.cleanRoles()
+}
+clients.init( [
+    new KeeperClient(process.env.TOKEN_2, TRIGGER_MODE.none)
+  ],
+  allReadyCallback
+)
 
-console.log("logging in")
-client.login(process.env.TOKEN);
+console.log("connecting to mongo...")
+mongo.connect(async err => {
+  if(err){
+    console.log("mgo connect err:", err)
+    return
+  }
+  console.log("connected to mongo")
+  // server.setClient(clients.getAll()[1].client)
+  clients.start()
+})

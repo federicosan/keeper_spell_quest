@@ -1,5 +1,5 @@
 const { interactionHandler } = require('./client/interaction')
-const { client, setClientTriggers } = require('./client/client')
+const { clients, KeeperClient, TRIGGER_MODE } = require('./client/client')
 const { stats } = require('./game/stats')
 const { vote } = require('./game/vote')
 const { runReferralsCounter, runPurgatory } = require('./game/recruit')
@@ -33,7 +33,7 @@ server.setDatabase(database)
 server.setDB(mongo.db("general"))
 
 async function initMessageCache() {
-  var guild = await client.guilds.cache.get(server.Id)
+  var guild = await server.client.guilds.cache.get(server.Id)
   var cultChannels = server.Cults.channelIds()
   try {
     let channels = guild.channels.cache
@@ -66,10 +66,8 @@ async function initMessageCache() {
   }
 }
 
-setClientTriggers()
 var loggedIn = false
-
-client.once('ready', async () => {
+const allReadyCallback = async () => {
   console.log('Ready!');
   loggedIn = true
   await server.loadDiscordUsers()
@@ -94,7 +92,15 @@ client.once('ready', async () => {
   spells_game.run(server)
   manager.run()
   extensions.run()
-});
+}
+
+clients.init(
+  [
+    new KeeperClient(process.env.TOKEN , TRIGGER_MODE.commands | TRIGGER_MODE.members | TRIGGER_MODE.messages | TRIGGER_MODE.logs),
+    new KeeperClient(process.env.TOKEN_2, TRIGGER_MODE.none)
+  ],
+  allReadyCallback
+)
 
 console.log("connecting to mongo...")
 mongo.connect(async err => {
@@ -102,7 +108,7 @@ mongo.connect(async err => {
     console.log("mgo connect err:", err)
   }
   console.log("logging in")
-  client.login(process.env.TOKEN)
+  clients.start()
   return
 })
 

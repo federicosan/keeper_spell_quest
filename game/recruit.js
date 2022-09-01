@@ -95,17 +95,17 @@ async function runReferralsCounter(server) {
   }, 20 * 60 * 1000)
 }
 
-async function handleJoin(server, member) {
+async function handleJoin(server, member, updateStats = true) {
   console.log("handleJoin: handling join for user:", member)
   var release = await UserMutex.acquire(member.id)
   try {
-    await _handleJoin(server, member)
+    await _handleJoin(server, member, updateStats)
   } finally {
     release()
   }
 }
 
-async function _handleJoin(server, member) {
+async function _handleJoin(server, member, updateStats = true) {
   let user = await server.db.collection("users").findOne({ "discord.userid": member.id })
   if (!user) {
     console.log("user not found")
@@ -214,7 +214,9 @@ async function _handleJoin(server, member) {
           zealotMember.roles.add(server.Roles.TrueBeliever)
           adventure.log(server, `${zealotMember} is now a True Believer <:truebeliever:1001232962819469432>`)
         }
-        updateAllStats()
+        if(updateStats){
+          updateAllStats()
+        }
       }
     } else {
       console.log("handleJoin: no zealot found for referred_by:", user.referred_by)

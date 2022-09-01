@@ -4,6 +4,7 @@ steps:
     args: ["run", "create-env"]
     env:
     - 'TOKEN=${_TOKEN}'
+    - 'TOKEN_2=${_TOKEN_2}'
     - 'MONGO_URI=${_MONGO_URI}'
     - 'WEB3_URI=${_WEB3_URI}'
   - name: 'gcr.io/cloud-builders/docker'
