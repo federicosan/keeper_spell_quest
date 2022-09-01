@@ -89,16 +89,16 @@ async function updateCultMembershipCounts() {
 var firstStatsTabUpdate = 0
 var numStatsTabUpdates = 0
 
-const prettifyChants = function() {
-  if(this > 1000){
-    return (this/1000).toFixed(1) + "k"
+const prettifyNumber = function(num) {
+  if(num > 1000){
+    return (num/1000).toFixed(1) + "k"
   }
-  return `${this}`
+  return `${num}`
 }
 
 async function updateCultStatsTab(client, cult) {
   console.log("updating cult stats tab for cult:", cult.name)
-  let msg = `${cult.emoji} ${prettifyChants(cult.stats.chants)}/${prettifyChants(cult.stats.population.prettify)} • ${cult.stats.score.toFixed(2)} `
+  let msg = `${cult.emoji} ${prettifyNumber(cult.stats.chants)}/${prettifyNumber(cult.stats.population.prettify)} • ${cult.stats.score.toFixed(2)} `
   let channel = client.channels.cache.get(cult.statsChannel);
   try {
     console.log("setting channel name:", msg)

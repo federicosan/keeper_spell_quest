@@ -4,7 +4,7 @@ const { SABOTAGE_POINTS, RECRUIT_CULT_POINTS } = require('../spells/constants')
 const { adventure } = require('../spells/adventure')
 const { LastChapterEndTime, ChapterStartTime } = require('./clock')
 const { StringMutex } = require('../utils/mutex')
-const { getAllPastReferralsSet } = require('../utils/user')
+const { getAllPastReferralsSet, getAllPastChantsCount } = require('../utils/user')
 
 // async function accurateCalculateCultReferrals(cult, server) {
 //   // get all users with cult
@@ -96,7 +96,7 @@ async function runReferralsCounter(server) {
 }
 
 async function handleJoin(server, member, updateStats = true) {
-  console.log("handleJoin: handling join for user:", member)
+  console.log("handleJoin: handling join for user:", member, "update-stats:", updateStats)
   var release = await UserMutex.acquire(member.id)
   try {
     await _handleJoin(server, member, updateStats)
@@ -134,22 +134,27 @@ async function _handleJoin(server, member, updateStats = true) {
   } catch (err) {
     console.log("error adding role:", err)
   }
+  console.log("handleJoin: added cult role of cult:", cult.id, "for user:", member.id)
   console.log("handleJoin: adding cultist role for user:", member.id)
   try {
     await member.roles.add(server.Roles.Cultist)
   } catch (err) {
     console.log("error adding role:", err)
   }
-  if (!user.points || user.points == 0) {
+  console.log("handleJoin: added cultist role for user:", member.id)
+  if (getAllPastChantsCount(user) < 1) {
+    console.log("handleJoin: adding unzealous role for user:", member.id)
     try {
       await member.roles.add(server.Roles.Unzealous)
     } catch (err) {
       console.log("add unzealous role errror:", err)
     }
+    console.log("handleJoin: added unzealous role for user:", member.id)
   }
 
   // Handle referral
   if (user.referred_by && user.referred_by !== "") {
+    console.log("handling referral...")
     let zealot = await server.db.collection("users").findOne({ "referral_key": user.referred_by })
     if (zealot) {
       console.log("zealot:", zealot)
@@ -218,6 +223,7 @@ async function _handleJoin(server, member, updateStats = true) {
           updateAllStats()
         }
       }
+      console.log("handled referral")
     } else {
       console.log("handleJoin: no zealot found for referred_by:", user.referred_by)
     }
