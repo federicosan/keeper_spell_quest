@@ -146,6 +146,10 @@ async function handleChant(server, user) {
 }
 
 async function handleCastPoints(server, user, points) {
+  if(!user){
+    console.log("handleCastPoints called with null user")
+    return
+  }
   console.log("points handleChant user:", user.discord.userid)
   user.num_cast_points = user.num_cast_points ? user.num_cast_points+points : points
   user.points = user.points ? user.points + points : points

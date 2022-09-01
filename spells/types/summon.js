@@ -42,6 +42,10 @@ class SummoningSpell {
     if (this.spell.type == CONJURE_FREEZE_SPELL) {
       targetType = "cultist"
       let users = cache.CultFreezeTargets[cult.id]
+      if(!users){
+        await interaction.update({ content: `keeper is reloading, give me a few seconds and try again...`, components: [], ephemeral: true })
+        return
+      }
       for (const user of users) {
         var _cult = server.Cults.get(user.cult_id)
         if (!_cult) {

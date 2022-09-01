@@ -61,10 +61,14 @@ class Server {
   
   async getUser(id) {
     let user = await this.db.collection("users").findOne({ 'discord.userid': id })
-    if(user){
+    if(user && user !== undefined){
       return new Cultist(user)
     }
     return null
+  }
+  
+  async getCultForUserId(id){
+    
   }
 
   async loadUser(id) {
@@ -255,6 +259,7 @@ const spellQuestServer = new Server("970091626779254874",
     AdventureLogChannelId: "989617981233451028",
     GameTimerChannelId: "999040396258717706",
     AltarChannelId: "978078135193071657",
+    AutonomousCouncilChannelId: "1007018715474313216"
   },
   {
     AYE: "976559748143001642",

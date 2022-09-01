@@ -158,6 +158,13 @@ async function _handleJoin(server, member) {
         }
         let zealotCult = server.Cults.userCult(zealotMember)
         zealot.referrals.push(member.id)
+        if(!zealotCult && zealot.cult_id && zealot.cult_id != ''){
+          zealotCult = server.Cults.get(zealot.cult_id)
+          if(!zealotCult){
+            console.log("no cult for zealot id:", zealot.discord ? zealot.discord.userid : `no id, account: ${zealot.address}`)
+            return
+          }
+        }
 
         let isSabotage = cult.id != zealotCult.id
         let basePoints = isSabotage ? SABOTAGE_POINTS : RECRUIT_CULT_POINTS
@@ -217,6 +224,7 @@ async function handleSabotage(server, interaction) {
   }
   if (!cult) {
     interaction.reply({ content: 'not a valid cult role', ephemeral: true })
+    return
   }
 
   await server.db.collection("users").update({ 'discord.userid': interaction.member.id }, { $set: { referral_target_cult_id: cult.id } })
@@ -224,6 +232,31 @@ async function handleSabotage(server, interaction) {
 }
 
 async function runPurgatory(server) {
+  const cleanStart = async () => {
+    try {
+      var guild = await server.client.guilds.cache.get(server.Id)
+      let channel = guild.channels.cache.get('986712037633720390')
+      let _lastMsg = '1010303218678501468';
+      let _now = Date.now()
+      while (true) {
+        let messages = await channel.messages.fetch({
+          limit: 99,
+          after: _lastMsg
+        })
+        messages = [...messages.values()]
+        if (messages.length == 0) {
+          break;
+        }
+        if (messages.length == 0) {
+          break;
+        }
+        console.log("deleting messages in purgatory")
+        await channel.bulkDelete(messages, true)
+      }
+    } catch (error) {
+      console.log("runPurgatory error:", error)
+    }
+  }
   const cleanPurgatory = async () => {
     try {
       var guild = await server.client.guilds.cache.get(server.Id)
