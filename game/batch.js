@@ -530,43 +530,6 @@ async function prepForHomecoming() {
   // 3. open up homecoming!
 }
 
-async function ensureUserCultRoleAssigned(date) {
-  await server.loadDiscordUsers()
-  let users = await server.db.collection("users").find({ 'discord.userid': { $exists: true, $ne: '', $nin: server.admins } })
-  users = await users.toArray()
-  console.log("num users:", users.length)
-
-  for (const user of users) {
-    if (!user.discord || !user.discord.userid || user.discord.userid == '') {
-      console.log('empty userid:', user)
-      continue
-    }
-    if (user.discord.userid == '365989466126549013') {
-      console.log("found cloud caster")
-    }
-    let member = server.getMember(user.discord.userid)
-    if (!member) {
-      console.log("no member found for user:", user.discord.userid)
-      continue
-    }
-    // user has cult role:
-    let cult = server.Cults.get(user.cult_id)
-    if (!cult) {
-      console.log("user:", user.discord.name, user.discord.userid, "no cult assigned")
-      continue
-    }
-    if (!member.roles.cache.has(cult.roleId)) {
-      console.log("user:", user.discord.name, user.discord.userid, "does not have cult role")
-      member.roles.add(cult.roleId)
-    }
-    for (const [key, _cult] of server.Cults.entries()) {
-      if (_cult.id != cult.id && member.roles.cache.has(_cult.roleId)) {
-        console.log("user:", user.discord.name, user.discord.userid, "has wrong cult:", _cult.name)
-      }
-    }
-  }
-}
-
 async function migrate() {
   let date = new Date("2022-08-25T22:26:40.664Z")
   console.log("date:", date)
@@ -817,6 +780,21 @@ async function fixChants(){
   // remove n-excess chants, remove n * 15 magic down to 0
 }
 
+async function cleanupChannelMessages(channelId, afterMessage){
+  let channel = server.getChannel(channelId)
+  console.log("channel:", channel)
+  let fetched;
+  do {
+    fetched = await channel.messages.fetch({
+      limit: 99,
+      after: afterMessage
+    })
+    console.log("deleting...")
+    await channel.bulkDelete(fetched, true)
+  }
+  while(fetched.size >= 2)
+}
+
 exports.batch = {
   resetCultScores: resetCultScores,
   resetChanting: resetChanting,
@@ -826,11 +804,11 @@ exports.batch = {
   markUnzealous: markUnzealous,
   findUnboundUsers: findUnboundUsers,
   shuffleUsers: shuffleUsers,
-  ensureUserCultRoleAssigned: ensureUserCultRoleAssigned,
   markWL: markWL,
   initNumReferrals: initNumReferrals,
   assignKeys: assignKeys,
   prepForHomecoming: prepForHomecoming,
   migrateDatabase: migrateDatabase,
-  fixChants: fixChants
+  fixChants: fixChants,
+  cleanupChannelMessages: cleanupChannelMessages
 }

@@ -5,7 +5,7 @@ const Database = require("@replit/database");
 const { MongoClient } = require('mongodb')
 
 const { creatures } = require('./spells/creatures')
-
+const { updater } = require('./game/updater');
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -16,21 +16,6 @@ server.setDatabase(database)
 let mongo = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 server.setDB(mongo.db("general"))
 
-async function cleanupChannel(channelId, afterMessage){
-  let channel = server.getChannel(channelId)
-  console.log("channel:", channel)
-  let fetched;
-  do {
-    fetched = await channel.messages.fetch({
-      limit: 99,
-      after: afterMessage
-    })
-    console.log("deleting...")
-    await channel.bulkDelete(fetched, true)
-  }
-  while(fetched.size >= 2)
-}
-
 var loggedIn = false
 client.once('ready', async () => {
 	console.log('Ready!');
@@ -39,7 +24,8 @@ client.once('ready', async () => {
     if(err){
       console.log("mgo connect err:", err)
     }
-    await cleanupChannel('1012894283499569203', '1012903031441993748')
+    await updater.cleanRoles()
+    // await cleanupChannel('1012894283499569203', '1012903031441993748')
   })
 });
 

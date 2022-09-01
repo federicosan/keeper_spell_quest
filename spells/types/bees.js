@@ -19,6 +19,10 @@ class BeesSpell {
     var cult = server.Cults.userCult(interaction.member)
     let users = cache.CultBeesTargets[cult.id]
     console.log("users:", users)
+    if(!users){
+      await interaction.update({ content: `keeper is reloading, give me a few seconds and try again...`, components: [], ephemeral: true })
+      return
+    }
     var options = []
     for (const user of users) {
       var _cult = server.Cults.get(user.cult_id)

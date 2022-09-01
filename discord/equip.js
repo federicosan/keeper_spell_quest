@@ -77,6 +77,7 @@ var cultAncients = {
 }
 
 async function init(server) {
+  return
 	try {
 		console.log('Started refreshing application (/) commands.');
   

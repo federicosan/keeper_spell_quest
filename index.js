@@ -19,6 +19,7 @@ const web3 = new Web3(process.env.WEB3_URI)
 
 var exec = require('child_process').exec
 const { spells_game } = require('./spells/controller')
+const { manager } = require('./game/manager')
 const { clock } = require('./game/clock')
 const { homecoming } = require('./game/homecoming')
 const { sortinghat } = require('./discord/sortinghat')
@@ -91,6 +92,7 @@ client.once('ready', async () => {
   await extensions.init()
   runReferralsCounter(server)
   spells_game.run(server)
+  manager.run()
   extensions.run()
 });
 

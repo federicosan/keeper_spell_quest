@@ -129,11 +129,20 @@ async function _handleJoin(server, member) {
     return
   }
   console.log("handleJoin: adding cult role of cult:", cult.id, "for user:", member.id)
-  member.roles.add(cult.roleId)
-  member.roles.add(server.Roles.Cultist)
+  try {
+    await member.roles.add(cult.roleId)
+  } catch (err) {
+    console.log("error adding role:", err)
+  }
+  console.log("handleJoin: adding cultist role for user:", member.id)
+  try {
+    await member.roles.add(server.Roles.Cultist)
+  } catch (err) {
+    console.log("error adding role:", err)
+  }
   if (!user.points || user.points == 0) {
     try {
-      member.roles.add(server.Roles.Unzealous)
+      await member.roles.add(server.Roles.Unzealous)
     } catch (err) {
       console.log("add unzealous role errror:", err)
     }

@@ -61,7 +61,7 @@ class Creature {
       // .addField('target', `<@&${server.Cults.get(this.target.id).roleId}>`)
       .addField('target', `${server.Cults.get(this.target.id).getName(server)}`)
       .addField('summoner', await this.getSummoner(server))
-      .addField('attack', `${this.strength}`)
+      .addField('power', `${this.type == ALLY_TYPE ? '+' : '-'}${this.strength}𐂥`)
       .addField('attack-period', `${this.attackPeriod / (60 * 1000)} minutes`)
       .addField('hp', `${healthBar} ${this.healthRemaining}/${this.health}`)
       .setColor('0x000000');
@@ -320,7 +320,11 @@ async function handleDamage(server, creatureId, damage) {
     await creature.handleDefeat(server)
     let channel = server.client.channels.cache.get(creature.channelId)
     setTimeout(() => {
-      channel.delete()
+      try {
+        channel.delete()
+      } catch (error) {
+        console.log("handleDamage channel delete error:", error) 
+      }
     }, 30 * 1000)
     await server.db.collection("creatures").update({ id: creatureId }, { $set: { healthRemaining: 0 } })
     // await server.db.collection("creatures").remove({id: creatureId})
@@ -354,7 +358,11 @@ async function killCreature(server, creature) {
   await creature.handleDefeat(server)
   let channel = server.client.channels.cache.get(creature.channelId)
   setTimeout(() => {
-    channel.delete()
+    try {
+      channel.delete()
+    } catch (error) {
+      console.log("killCreature channel delete error:", error) 
+    }
   }, 60 * 1000)
   await server.db.collection("creatures").update({ id: creature.id }, { $set: { healthRemaining: 0 } })
   await creature.updateMsg(server)
@@ -463,7 +471,7 @@ async function _conjureFreezer(server, power, targetUserId) {
   await creature.updateMsg(server)
   try {
     console.log("adding role:", server.Roles.Abducted)
-    member.roles.add(server.Roles.Abducted)
+    await member.roles.add(server.Roles.Abducted)
   } catch (err) {
     console.log("error:", err)
   }
