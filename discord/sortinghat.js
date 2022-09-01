@@ -23,7 +23,7 @@ async function addReaction(reaction, user) {
     let cultist = await server.getUser(user.id)
     if(!cultist){
       let embed = new MessageEmbed()
-        .setTitle(`${user} you must bind before playing <:magic:975922950551244871>`)
+        .setTitle(`${user.username ? user.username + ' ' : ''}you must bind before playing <:magic:975922950551244871>`)
         .setColor("#FFFFE0")
         .setURL('https://spells.quest/bind')
         .setDescription(`you must [**bind**](https://spells.quest/bind) to join a cult`)
