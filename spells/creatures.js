@@ -397,7 +397,13 @@ async function _conjureMonster(server, power, targetCultId) {
     permissionOverwrites: [
       {
         id: guild.id,
-        deny: [Permissions.FLAGS.VIEW_CHANNEL],
+        deny: [
+          Permissions.FLAGS.VIEW_CHANNEL,
+          Permissions.FLAGS.CREATE_PUBLIC_THREADS,
+          Permissions.FLAGS.CREATE_PRIVATE_THREADS,
+          Permissions.FLAGS.ATTACH_FILES,
+          Permissions.FLAGS.EMBED_LINKS,
+        ],
       }
     ]
   })
@@ -459,7 +465,13 @@ async function _conjureFreezer(server, power, targetUserId) {
     permissionOverwrites: [
       {
         id: guild.id,
-        deny: [Permissions.FLAGS.VIEW_CHANNEL],
+        deny: [
+          Permissions.FLAGS.VIEW_CHANNEL,
+          Permissions.FLAGS.CREATE_PUBLIC_THREADS,
+          Permissions.FLAGS.CREATE_PRIVATE_THREADS,
+          Permissions.FLAGS.ATTACH_FILES,
+          Permissions.FLAGS.EMBED_LINKS,
+        ],
       }
     ]
   })
