@@ -29,14 +29,21 @@ async function addReaction(reaction, user) {
         .setDescription(`you must [**bind**](https://spells.quest/bind) to join a cult`)
         .addField('binding', 'one click auth with discord so @keeper can connect your wallet to your profile. [go here](https://spells.quest/bind) and click the 🗡')
         .setFooter({ text: '​', iconURL: 'https://cdn.discordapp.com/emojis/975977080699379712.webp?size=96&quality=lossless' })
-      let response = await targetMessage.reply({ embeds: [embed] }).catch(console.error)
-      setTimeout( async () => {
-        try {
-          await response.delete()
-        } catch(err) {
-          console.log("response delete error:", err)
-        }
-      }, 60 * 1000)
+      
+      let thread = await targetMessage.startThread({
+        name: `binding ${user.username}`,
+        autoArchiveDuration: 60,
+        type: 'GUILD_PRIVATE_THREAD'
+      })
+      thread.send({ embeds: [embed] }).catch(console.error)
+      // let response = await targetMessage.reply({ embeds: [embed] }).catch(console.error)
+      // setTimeout( async () => {
+      //   try {
+      //     await response.delete()
+      //   } catch(err) {
+      //     console.log("response delete error:", err)
+      //   }
+      // }, 60 * 1000)
       return true
     }
     let member = server.getMember(user.id)
