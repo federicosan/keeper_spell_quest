@@ -6,7 +6,8 @@ const { MongoClient } = require('mongodb')
 
 const { creatures } = require('./spells/creatures')
 const { updater } = require('./game/updater');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
+const { cache } = require('./spells/types/cache');
 dotenv.config()
 
 console.log("db key:", process.env.REPLIT_DB_URL)
@@ -18,9 +19,21 @@ server.setDB(mongo.db("general"))
 
 const allReadyCallback = async () => {
   await server.Cults.init(server, readOnly = false)
+  // let channel = server.client.channels.cache.get('1012894283499569203')
+  // try {
+  //   await channel.messages.delete('1015004971449729074')
+  // } catch (err) {
+  //   console.log("err:", err)
+  // }
+  console.time('updateFreezeTargets')
+  await cache.updateFreezeTargets()
+  console.timeEnd('updateFreezeTargets')
+          
   // await batch.cleanupChannelMessages('1012894283499569203', '1012903031441993748')
-  await batch.cleanupChannelMessages(server.channels.EnterChannelId, '1010303218678501468')
-  await updater.cleanRoles()
+  // await batch.cleanupChannelMessages(server.channels.EnterChannelId, '1010303218678501468')
+  while(true) {
+    await updater.cleanRoles()
+  }
 }
 
 clients.init( [
