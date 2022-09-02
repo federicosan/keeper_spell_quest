@@ -174,10 +174,10 @@ async function _handleJoin(server, member, updateStats = true) {
         zealot.referrals.push(member.id)
         if(!zealotCult && zealot.cult_id && zealot.cult_id != ''){
           zealotCult = server.Cults.get(zealot.cult_id)
-          if(!zealotCult){
-            console.log("no cult for zealot id:", zealot.discord ? zealot.discord.userid : `no id, account: ${zealot.address}`)
-            return
-          }
+        }
+        if(!zealotCult){
+          console.log("no cult for zealot id:", zealot.discord ? zealot.discord.userid : `no id, account: ${zealot.address}`)
+          return
         }
 
         let isSabotage = cult.id != zealotCult.id

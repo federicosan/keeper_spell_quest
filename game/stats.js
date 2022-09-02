@@ -98,7 +98,7 @@ const prettifyNumber = function(num) {
 
 async function updateCultStatsTab(client, cult) {
   console.log("updating cult stats tab for cult:", cult.name)
-  let msg = `${cult.emoji} ${prettifyNumber(cult.stats.chants)}/${prettifyNumber(cult.stats.population.prettify)} • ${cult.stats.score.toFixed(2)} `
+  let msg = `${cult.emoji} ${prettifyNumber(cult.stats.chants)}/${prettifyNumber(cult.stats.population)} • ${cult.stats.score.toFixed(2)} `
   let channel = client.channels.cache.get(cult.statsChannel);
   try {
     console.log("setting channel name:", msg)

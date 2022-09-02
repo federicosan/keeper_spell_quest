@@ -1,4 +1,5 @@
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js')
+const { text } = require('express')
 const { server } = require('../server')
 const { StringMutex } = require('../utils/mutex')
 
@@ -32,7 +33,7 @@ async function addReaction(reaction, user) {
       
       let thread = await targetMessage.startThread({
         name: `binding ${user.username}`,
-        autoArchiveDuration: 60,
+        autoArchiveDuration: 2,
         type: 'GUILD_PRIVATE_THREAD'
       })
       thread.send({ embeds: [embed] }).catch(console.error)
@@ -83,6 +84,71 @@ async function addReaction(reaction, user) {
 
 }
 
+async function handleChair(interaction) {
+  if (server.isAdmin(interaction.member.id)) {
+    return false
+  }
+  let targetMessage = await server.getCachedMessage(SortingHatChannelId, 'sortinghat')
+  if (!targetMessage) {
+    return false
+  }
+  
+  var release = await UserMutex.acquire(interaction.member.id)
+  try {
+    let cultist = await server.getUser(interaction.member.id)
+    if(!cultist){
+      let embed = new MessageEmbed()
+        .setTitle(`${interaction.user.username ? interaction.user.username + ' ' : ''}you must bind before playing <:magic:975922950551244871>`)
+        .setColor("#FFFFE0")
+        .setURL('https://spells.quest/bind')
+        .setDescription(`you must [**bind**](https://spells.quest/bind) to join a cult`)
+        .addField('binding', 'one click auth with discord so @keeper can connect your wallet to your profile. [go here](https://spells.quest/bind) and click the 🗡')
+        .setFooter({ text: '​', iconURL: 'https://cdn.discordapp.com/emojis/975977080699379712.webp?size=96&quality=lossless' })
+      
+      try {
+        await interaction.reply({ embeds:[embed], ephemeral: true })
+      } catch (err) {
+        console.log(err)
+      }
+      return true
+    }
+    let member = server.getMember(interaction.member.id)
+    var cult = server.memberCult(member)
+    if (cult) {
+      // already has cult
+      try {
+        await interaction.reply({ content: `you are already in ${cult.getName(server)}`, ephemeral: true })
+      } catch (err) {
+        console.log(err)
+      }
+      return true
+    }
+    
+    if(Math.random() < 0.5) {
+      let idx = Math.floor(Math.random() * server.Cults.values().length)
+      cult = server.Cults.values()[idx]
+    } else {
+      let minPoints = Number.MAX_SAFE_INTEGER
+      for (const _cult of server.Cults.values()) {
+        let score = await _cult.getScore(server)
+        if(score < minPoints){
+          cult = _cult
+        }
+      }
+    }
+    if (cult) {
+      // assign user to cult
+      console.log("adding role:", cult.roleId, "to user:", user.id)
+      await server.db.collection("users").update({ 'discord.userid': user.id }, { $set: { cult_id: cult.id } })
+      await member.roles.add(cult.roleId)
+    }
+  } finally {
+    release()
+  }
+  return true
+
+}
+
 async function updateMessage() {
   let txt = `**enter the sorting hat**
   
@@ -91,19 +157,27 @@ there are 3 ways to join a cult:
 1. **react with 🪑 and the sorting hat will assign you a cult**
 2. ask a friend to invite you to their cult
 3. go to <#979919655105875999> and use someone's zealous link`
-  let message = await server.updateCachedMessage(SortingHatChannelId, 'sortinghat', txt)
-  await message.reactions.removeAll()
+let msgContent = {
+  content: txt,
+  components: [
+    new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setCustomId('do_sorting_hat')
+          .setLabel('🪑')
+          .setStyle('PRIMARY')
+      )
+  ]
+}
+  let message = await server.updateCachedMessage(SortingHatChannelId, 'sortinghat', msgContent)
+  // await message.reactions.removeAll()
   setTimeout(() => {
     message.react('🪑')
   }, 1 * 1000)
 }
 
 async function init() {
-  // updateMessage()
-  // setInterval(() => {
-  //   updateMessage()
-  // }, 10 * 60 * 1000)
-  // updateMessage()
+  updateMessage()
   if (await server.getCachedMessage(SortingHatChannelId, 'sortinghat')) {
     return
   }
@@ -112,5 +186,6 @@ async function init() {
 
 exports.sortinghat = {
   init: init,
-  addReaction: addReaction
+  addReaction: addReaction,
+  handleChair: handleChair
 }

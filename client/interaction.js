@@ -9,6 +9,7 @@ const { spells } = require('../spells/spells')
 const { store } = require('../spells/store')
 const { cast } = require('../spells/cast')
 const { drop } = require('../spells/drop')
+const { sortinghat } = require('../discord/sortinghat')
 const { handleSabotage } = require('../game/recruit')
 const { toHrMin } = require('../utils/time')
 
@@ -178,6 +179,9 @@ async function handleInteraction(server, interaction) {
         break
       case "drop_confirm":
         await drop.commit(server, interaction)
+        break
+      case "do_sorting_hat":
+        await sortinghat.handleChair(interaction)
         break
     }
   }

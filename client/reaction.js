@@ -18,14 +18,14 @@ exports.handleReaction = async function(reaction, user) {
   if (IS_RESTARTING && !server.isAdmin(user.id)) {
     return
   }
-  try {
-    let handled = await sortinghat.addReaction(reaction, user)
-    if (handled) {
-      return
-    }
-  } catch (error) {
-    console.log(error)
-  }
+  // try {
+  //   let handled = await sortinghat.addReaction(reaction, user)
+  //   if (handled) {
+  //     return
+  //   }
+  // } catch (error) {
+  //   console.log(error)
+  // }
   try {
     let handled = await vote.addReaction(server, reaction, user)
     if (handled) {
