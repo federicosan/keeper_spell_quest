@@ -213,6 +213,10 @@ async function handle(msg) {
   if (msg.author.bot) {
     return
   }
+  if (server.isNoMessagesChannel(msg.channel.id)) {
+    msg.delete() 
+    return
+  }
   if (msg.channel.id != '998745420371083384' && await server.userIsFrozen(msg.member) && msg.interaction == null) {
     var userCult = server.Cults.userCult(msg.member)
     if (true || (userCult && msg.channel.id != userCult.id)) {

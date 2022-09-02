@@ -3,8 +3,19 @@ const { Cult, Cults } = require('./types/cult')
 const { FREEZER_TYPE } = require('./spells/constants')
 const { KeyValueStore } = require('./utils/kvstore')
 
+class ServerRules() {
+  constructor(channelRules) {
+    this.channelRules = channelRules
+  }
+  
+  isNoMessagesChannel(id){
+    let rules = this.channelRules[id]
+    return rules && rules.noMessages
+  }
+}
+
 class Server {
-  constructor(id, cults, testCult, welcomeChannel, statsChannel, beginChannel, altarChannel, channels, emojis, roles) {
+  constructor(id, cults, testCult, welcomeChannel, statsChannel, beginChannel, altarChannel, channels, emojis, roles, rules) {
     this.Id = id
     this.Cults = cults
     this.TestCult = testCult
@@ -17,6 +28,7 @@ class Server {
     this.Roles = roles
     this.ADMIN_ID = "821876872391950386"
     this.admins = ["821876872391950386"]
+    this.rules = rules
   }
 
   setClient(client) {
@@ -286,7 +298,12 @@ const spellQuestServer = new Server("970091626779254874",
     Unzealous: "997279025292644372",
     Abducted: "998705483277938739",
     Lost: "1004460065463484518"
-  }
+  },
+  new ServerRules({
+    '986712037633720390': {
+      noMessages: true
+    }
+  })
 )
 
 const testServer = {

@@ -18,8 +18,8 @@ server.setDB(mongo.db("general"))
 
 const allReadyCallback = async () => {
   await server.Cults.init(server, readOnly = false)
-  await batch.cleanupChannelMessages('1012894283499569203', '1012903031441993748')
-  // await updater.cleanRoles()
+  // await batch.cleanupChannelMessages('1012894283499569203', '1012903031441993748')
+  await updater.cleanRoles()
 }
 
 clients.init( [

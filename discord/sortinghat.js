@@ -154,7 +154,7 @@ async function updateMessage() {
   
 there are 3 ways to join a cult:
 
-1. **react with 🪑 and the sorting hat will assign you a cult**
+1. **click the 🪑 button and the sorting hat will assign you a cult**
 2. ask a friend to invite you to their cult
 3. go to <#979919655105875999> and use someone's zealous link`
 let msgContent = {
@@ -170,10 +170,10 @@ let msgContent = {
   ]
 }
   let message = await server.updateCachedMessage(SortingHatChannelId, 'sortinghat', msgContent)
-  // await message.reactions.removeAll()
-  setTimeout(() => {
-    message.react('🪑')
-  }, 1 * 1000)
+  await message.reactions.removeAll()
+  // setTimeout(() => {
+  //   message.react('🪑')
+  // }, 1 * 1000)
 }
 
 async function init() {
