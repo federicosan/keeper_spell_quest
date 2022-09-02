@@ -164,6 +164,7 @@ async function udpateStatsMessage(cults) {
   if (UDPATES_DISABLED) {
     return
   }
+  return
   let channel = server.client.channels.cache.get(server.BeginChannelId)
   let msg = null
   if (channel.id in lastStatsMessages && lastStatsMessages[channel.id] != null) {
@@ -174,7 +175,11 @@ async function udpateStatsMessage(cults) {
     }
   }
   if (msg) {
-    msg.edit(".\n\n" + getRankingMessage(cults, false))
+    try {
+      await  msg.edit(".\n\n" + getRankingMessage(cults, false))
+    } catch (error) {
+      console.log(error)
+    }
   } else {
     let message = await channel.send(".\n" + getRankingMessage(cults, true))
     lastStatsMessages[channel.id] = message.id

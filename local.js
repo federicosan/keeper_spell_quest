@@ -32,9 +32,9 @@ const allReadyCallback = async () => {
           
   // await batch.cleanupChannelMessages('1012894283499569203', '1012903031441993748')
   // await batch.cleanupChannelMessages(server.channels.EnterChannelId, '1010303218678501468')
-  while(true) {
-    await updater.cleanRoles()
-  }
+  // while(true) {
+  //   await updater.cleanRoles()
+  // }
 }
 
 clients.init( [
