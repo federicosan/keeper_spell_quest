@@ -15,6 +15,7 @@ const { fragments } = require('../spells/fragments')
 const { homecoming } = require('../game/homecoming')
 
 const EPOCH_PERIOD = 4 * 60 * 60 * 1000
+const CULT_EMOJI_REACTION_ENABLED = false
 
 var chantReactionLimiter = new RateLimiter(4, 60 * 1000)
 var UserMutex = new StringMutex()
@@ -74,13 +75,15 @@ async function handleChant(msg, noReply) {
             console.log("chant error:", error)
           }
         })
-        chantReactionLimiter.try(() => {
-          try {
-            msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
-          } catch (error) {
-            console.log("chant error:", error)
-          }
-        })
+        if(CULT_EMOJI_REACTION_ENABLED){
+          chantReactionLimiter.try(() => {
+            try {
+              msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
+            } catch (error) {
+              console.log("chant error:", error)
+            }
+          })
+        }
       }
       return
     }
@@ -106,13 +109,15 @@ async function handleChant(msg, noReply) {
         console.log("chant error:", error)
       }
     })
-    chantReactionLimiter.try(() => {
-      try {
-        msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
-      } catch (error) {
-        console.log("chant error:", error)
-      }
-    })
+    if(CULT_EMOJI_REACTION_ENABLED){
+      chantReactionLimiter.try(() => {
+        try {
+          msg.react(cult.emojiId ? cult.emojiId : cult.emoji)
+        } catch (error) {
+          console.log("chant error:", error)
+        }
+      })
+    }
     try {
       updateAllStats(cult)
     } catch (error) {
