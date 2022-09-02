@@ -180,9 +180,9 @@ async function handleInteraction(server, interaction) {
       case "drop_confirm":
         await drop.commit(server, interaction)
         break
-      case "do_sorting_hat":
-        await sortinghat.handleChair(interaction)
-        break
+      // case "do_sorting_hat":
+      //   await sortinghat.handleChair(interaction)
+      //   break
     }
   }
 

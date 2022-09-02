@@ -213,7 +213,7 @@ async function handle(msg) {
   if (msg.author.bot) {
     return
   }
-  if (server.isNoMessagesChannel(msg.channel.id) && !server.isAdmin(msg.author.id) && msg.interaction == null) {
+  if (server.rules.isNoMessagesChannel(msg.channel.id) && !server.isAdmin(msg.author.id) && msg.interaction == null) {
     msg.delete() 
     return
   }
