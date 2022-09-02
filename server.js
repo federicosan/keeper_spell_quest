@@ -3,7 +3,7 @@ const { Cult, Cults } = require('./types/cult')
 const { FREEZER_TYPE } = require('./spells/constants')
 const { KeyValueStore } = require('./utils/kvstore')
 
-class ServerRules() {
+class ServerRules {
   constructor(channelRules) {
     this.channelRules = channelRules
   }
@@ -77,10 +77,6 @@ class Server {
       return new Cultist(user)
     }
     return null
-  }
-  
-  async getCultForUserId(id){
-    
   }
 
   async loadUser(id) {
