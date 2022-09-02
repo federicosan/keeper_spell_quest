@@ -1,3 +1,4 @@
+const { Permissions } = require('discord.js');
 const { SetChannelPermissions, CULTIST_READ_ONLY, CULTIST_READ_WRITE } = require('./permissions')
 
 function _cultDungeonChannelName(cult) {
@@ -5,14 +6,14 @@ function _cultDungeonChannelName(cult) {
 }
 
 async function upsertCultDungeon(server, cult, readOnly = false) {
-  let dungeonId = await server.kvstore.get(`cult:${this.id}:dungeon`)
+  console.log("upserting dungeon for cult", cult.name)
+  let dungeonId = await server.kvstore.get(`cult:${cult.id}:dungeon`)
   let dungeon = dungeonId ? await server.getChannel(dungeonId) : null
   let name = _cultDungeonChannelName(cult)
   if(!dungeon) {
     if(readOnly) {
       return
     }
-    let targetCult = server.Cults.get(targetCultId)
     var guild = server.client.guilds.cache.get(server.Id)
     dungeon = await guild.channels.create(name, {
       type: 4, // GUILD_CATEGORY
@@ -24,12 +25,12 @@ async function upsertCultDungeon(server, cult, readOnly = false) {
       ]
     })
     await SetChannelPermissions(server, dungeon, CULTIST_READ_ONLY)
-  } else if (channel.name != name && !readOnly) {
-    await channel.setName(name)
+  } else if (dungeon.name != name && !readOnly) {
+    await dungeon.setName(name)
   }
   if(dungeon){
     if(!dungeonId || dungeon.id != dungeonId) {
-      await server.kvstore.set(`cult:${this.id}:dungeon`, dungeon.id)
+      await server.kvstore.set(`cult:${cult.id}:dungeon`, dungeon.id)
     }
     cult.channels.DungeonSectionId = dungeon.id
   }

@@ -10,6 +10,14 @@ class KeyValueStore {
     }
   }
   
+  async delete(key){
+    try{
+      await this.db.collection("kv").deleteOne({ key: key})
+    } catch(e) {
+      console.log(e)
+    }
+  }
+  
   async get(key){
     try{
       let r = await this.db.collection("kv").findOne({ key: key})

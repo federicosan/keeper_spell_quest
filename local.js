@@ -17,8 +17,8 @@ let mongo = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useU
 server.setDB(mongo.db("general"))
 
 const allReadyCallback = async () => {
-  await server.Cults.init(server, readOnly = true)
-  await updater.cleanRoles()
+  await server.Cults.init(server, readOnly = false)
+  // await updater.cleanRoles()
 }
 clients.init( [
     new KeeperClient(process.env.TOKEN_2, TRIGGER_MODE.none)
