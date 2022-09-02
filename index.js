@@ -96,7 +96,7 @@ const allReadyCallback = async () => {
 
 clients.init(
   [
-    new KeeperClient(process.env.TOKEN , TRIGGER_MODE.commands | TRIGGER_MODE.members | TRIGGER_MODE.messages | TRIGGER_MODE.logs),
+    new KeeperClient(process.env.TOKEN, TRIGGER_MODE.commands | TRIGGER_MODE.members | TRIGGER_MODE.messages | TRIGGER_MODE.logs),
     new KeeperClient(process.env.TOKEN_2, TRIGGER_MODE.none)
   ],
   allReadyCallback

@@ -18,6 +18,7 @@ let mongo = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useU
 server.setDB(mongo.db("general"))
 
 const allReadyCallback = async () => {
+  console.log("logged in")
   await server.Cults.init(server, readOnly = false)
   // let channel = server.client.channels.cache.get('1012894283499569203')
   // try {
@@ -50,5 +51,6 @@ mongo.connect(async err => {
   }
   console.log("connected to mongo")
   // server.setClient(clients.getAll()[1].client)
+  console.log("logging in")
   clients.start()
 })

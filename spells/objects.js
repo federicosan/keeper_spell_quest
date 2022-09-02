@@ -112,7 +112,11 @@ class Chest {
     if (this.messageId) {
       let msg = await channel.messages.fetch(this.messageId)
       if (msg) {
-        msg.edit({ embeds: [updatedMsg] })
+        try {
+          msg.edit({ embeds: [updatedMsg] })
+        } catch(err){
+          console.log("error editing msg:", err)
+        }
         return
       }
     }
@@ -182,7 +186,11 @@ class Chest {
     if (this.messageId) {
       let msg = await channel.messages.fetch(this.messageId)
       if (msg) {
-        msg.edit({ embeds: [updatedMsg] })
+        try {
+          msg.edit({ embeds: [updatedMsg] })
+        } catch(err){
+          console.log("error editing msg:", err)
+        }
         await server.db.collection("objects").update({ "id": this.id }, { $set: { state: "used" } })
         return
       }
