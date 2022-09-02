@@ -1,20 +1,32 @@
 const { MessageEmbed, Permissions } = require('discord.js')
 
-const CULTIST_READ_ONLY = 1
-const CULTIST_READ_WRITE = 2
-const EVERYONE_READ = 3
-const EVERYONE_READ_WRITE = 4
+var PERMISSIONS = {
+    READ: 1,
+    WRITE: 2,
+    REACT: 4
+}
 
-async function setChannelPermissions(server, channel, mode){
-    for(const cult of server.Cults.values()){
-        let v = {VIEW_CHANNEL: true, SEND_MESSAGES: false}
-        if(mode == CULTIST_READ_WRITE){
-            v.SEND_MESSAGES = true
-        }
-        channel.permissionOverwrites.create(cult.roleId, v);
+const CULTIST_READ_ONLY = PERMISSIONS.READ | PERMISSIONS.REACT
+const CULTIST_READ_WRITE = CULTIST_READ_ONLY | PERMISSIONS.WRITE
+
+async function SetChannelPermissions(server, channel, mode, roles = null){
+    if(!roles){
+        roles = [server.Roles.Cultist]
+    }
+    let v = {VIEW_CHANNEL: true, SEND_MESSAGES: false, ADD_REACTIONS: false}
+    if(mode & PERMISSIONS.WRITE){
+        v.SEND_MESSAGES = true
+    }
+    if(mode & PERMISSIONS.REACT){
+        v.ADD_REACTIONS = true
+    }
+    for(let role of roles){
+        channel.permissionOverwrites.create(role, v)
     }
 }
 
+
+exports.PERMISSIONS = PERMISSIONS
 exports.CULTIST_READ_ONLY = CULTIST_READ_ONLY
 exports.CULTIST_READ_WRITE = CULTIST_READ_WRITE
-exports.SetChannelPermissions = setChannelPermissions
+exports.SetChannelPermissions = SetChannelPermissions

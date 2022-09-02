@@ -181,9 +181,12 @@ const spellQuestServer = new Server("970091626779254874",
     //   "1007387977770610878",
     //   // proposalsChannel
     //   "1007387876369121380",
-      // {
-      //   ChestsChannel: ''
-      // },
+    //   {
+    //     main: '1007387236343492638',
+    //     stats: '1007387977770610878',
+    //     proposals: '1007387876369121380',
+    //     chests: ''
+    //   },
     //   // emoji id
     //   null,
     //   // bonus points
@@ -195,10 +198,14 @@ const spellQuestServer = new Server("970091626779254874",
       "forn nal numen",
       "🥼",
       "🥼",
-      "973761425677897759",
+      "973761425677897759", // roleId
       "977052635603554324",
       "977642272348864572",
       {
+        main: '972639993635938344',
+        stats: '977052635603554324',
+        proposals: '977642272348864572',
+        chests: '1012876161421946941',
         ChestsChannel: '1012876161421946941'
       },
       // emoji id
@@ -216,6 +223,10 @@ const spellQuestServer = new Server("970091626779254874",
       "977060905089105941",
       "977642383040716801",
       {
+        main: '973532685479854110',
+        stats: '977060905089105941',
+        proposals: '977642383040716801',
+        chests: '1012876251473649684',
         ChestsChannel: '1012876251473649684'
       },
       // emoji id
@@ -232,9 +243,12 @@ const spellQuestServer = new Server("970091626779254874",
     //   "973810144758616145",
     //   "977052689768804382",
     //   "977642330750353479",
-      // {
-      //   ChestsChannel: ''
-      // },
+    //   {
+    //     main: '973532570266533898',
+    //     stats: '977052689768804382',
+    //     proposals: '977642330750353479',
+    //     chests: ''
+    //   },
     //   // emoji id
     //   null,
     //   // bonus points
@@ -259,7 +273,8 @@ const spellQuestServer = new Server("970091626779254874",
     AdventureLogChannelId: "989617981233451028",
     GameTimerChannelId: "999040396258717706",
     AltarChannelId: "978078135193071657",
-    AutonomousCouncilChannelId: "1007018715474313216"
+    AutonomousCouncilChannelId: "1007018715474313216",
+    CultsSectionId: "970091626779254875"
   },
   {
     AYE: "976559748143001642",

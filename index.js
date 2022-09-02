@@ -41,9 +41,9 @@ async function initMessageCache() {
       if (channel.type != 'GUILD_TEXT') {
         continue
       }
-      if (channel.parentId == server.channels.DungeonSectionId) {
-        continue
-      }
+      // if (channel.parentId in server.Cults.values().map( cult => cult.channels.DungeonChannelId)) {
+      //   continue
+      // }
       let _lastMsg = 0;
       while (true) {
         let messages = await channel.messages.fetch({
@@ -72,7 +72,7 @@ const allReadyCallback = async () => {
   loggedIn = true
   await server.loadDiscordUsers()
   await vote.init(server)
-  await server.Cults.loadEmojis(server.kvstore)
+  await server.Cults.init(server)
   await stats.init()
   runPurgatory(server)
 

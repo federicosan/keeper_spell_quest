@@ -30,10 +30,6 @@ class SummoningSpell {
     this.spell = spell
   }
   async handleSelectFrom(server, interaction, castCache) {
-    if (sectionChannelCount(server, server.channels.DungeonSectionId) >= 50) {
-      await interaction.update({ content: `dungeon is full`, components: [], ephemeral: true })
-      return
-    }
     castCache[interaction.message.interaction.id] = this.spell.id
 
     var cult = server.Cults.userCult(interaction.member)
@@ -102,10 +98,23 @@ class SummoningSpell {
         return
       }
       target = `${member}`
+      let cult = server.memberCult(member)
+      if (!cult) {
+        await interaction.update({ content: `error: couldn't find cult for cultist | talk to @hypervisor`, components: [], ephemeral: true })
+        return
+      }
+      if (sectionChannelCount(server, cult.channels.DungeonSectionId) >= 50) {
+        await interaction.update({ content: `${cult.getName(server)} dungeon is full`, components: [], ephemeral: true })
+        return
+      }
     } else {
       var cult = server.Cults.get(interaction.values[0])
       if (!cult) {
         await interaction.update({ content: `error: couldn't find cult | talk to @hypervisor`, components: [], ephemeral: true })
+        return
+      }
+      if (sectionChannelCount(server, cult.channels.DungeonSectionId) >= 50) {
+        await interaction.update({ content: `${cult.getName(server)} dungeon is full`, components: [], ephemeral: true })
         return
       }
       target = cult.getName(server)
@@ -124,6 +133,7 @@ class SummoningSpell {
       );
 
     await interaction.update({ content: `cast ${this.spell.name} on ${target}`, components: [row], ephemeral: true })
+    return true
   }
 
   async commit(server, interaction, castToCache) {
@@ -143,12 +153,25 @@ class SummoningSpell {
         await interaction.editReply({ content: `error: couldn't find cultist | talk to @hypervisor`, components: [], ephemeral: true })
         return
       }
+      let cult = server.memberCult(member)
+      if (!cult) {
+        await interaction.update({ content: `error: couldn't find cult for cultist | talk to @hypervisor`, components: [], ephemeral: true })
+        return
+      }
+      if (sectionChannelCount(server, cult.channels.DungeonSectionId) >= 50) {
+        await interaction.update({ content: `${cult.getName(server)} dungeon is full`, components: [], ephemeral: true })
+        return
+      }
       creature = await creatures.conjureFreezer(server, this.spell.power, member.id)
       cache.updateFreezeTargets()
     } else {
       var cult = server.Cults.get(target)
       if (!cult) {
         await interaction.editReply({ content: `error: couldn't find cult | talk to @hypervisor`, components: [], ephemeral: true })
+        return
+      }
+      if (sectionChannelCount(server, cult.channels.DungeonSectionId) >= 50) {
+        await interaction.update({ content: `${cult.getName(server)} dungeon is full`, components: [], ephemeral: true })
         return
       }
       switch (this.spell.type) {

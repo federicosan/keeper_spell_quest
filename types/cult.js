@@ -5,6 +5,13 @@ const {
   FRAGMENTS_SABOTAGE_CULT_POINTS,
   FRAGMENTS_SABOTEUR_CULT_POINTS
 } = require('../spells/constants.js')
+const { channels } = require('../utils/channels.js')
+
+
+const MAIN_CHANNEL_KEY = "main_channel"
+const PROPOSAL_CHANNEL_KEY = "proposal_channel"
+const CHEST_CHANNEL_KEY = "chest_channel"
+const FRAGMENTS_CHANNEL_KEY = "fragments_channel"
 
 class Cult {
   constructor(name, id, chant, emoji, discordEmoji, roleId, statsChannel, proposalsChannel, channels, emojiId, bonusPoints) {
@@ -19,6 +26,32 @@ class Cult {
     this.channels = channels
     this.emojiId = emojiId
     this.bonusPoints = bonusPoints
+  }
+  
+  async init(server, readOnly = false) {
+    await this.loadEmoji(server.kvstore)
+    // ensure role created
+    if(readOnly){
+      await channels.loadCultChannels(server, this)
+      await channels.loadCultDungeon(server, this)
+    } else {
+      await channels.upsertCultChannels(server, this)
+      // ensure channel
+      await channels.upsertCultDungeon(server, this)
+    }
+  }
+  
+  async loadEmoji(kvstore) {
+    let emoji = await kvstore.get(`cult:emoji:${this.id}`)
+    if (emoji) {
+      console.log("CULT EMOJI:", emoji)
+      this.emoji = emoji
+      this.discordEmoji = emoji
+    }
+  }
+  
+  async delete(server) {
+    // TODO: allow cult channels to be deleted
   }
 
   getName(server) {
@@ -57,7 +90,7 @@ class Cult {
   }
 
   async channel(server) {
-    return server.client.channels.cache.get(this.id)
+    return server.client.channels.cache.get(this.channels.main)
   }
 
   getRole(server) {
@@ -186,12 +219,22 @@ class Cults {
     this.cults = cults
   }
 
+  async init(server, readOnly = false)  {
+    for(let cult of this.values()) {
+      await cult.init(server, readOnly)
+    }
+  }
+  
   entries() {
     return Object.entries(this.cults)
   }
 
   values() {
     return Object.values(this.cults)
+  }
+  
+  roles() {
+    return this.values().map(cult => cult.roleId)
   }
 
   mergeStats(cultStats) {
@@ -206,7 +249,7 @@ class Cults {
       if (id == cult.id) {
         return cult
       }
-      if (id == cult.proposalsChannel) {
+      if (Object.values(cult.channels).includes(id)) {
         return cult
       }
     }
@@ -265,17 +308,6 @@ class Cults {
       i += await _cult.countMembers(server)
     }
     return i
-  }
-
-  async loadEmojis(kvstore) {
-    for (const [key, cult] of Object.entries(this.cults)) {
-      let emoji = await kvstore.get(`cult:emoji:${cult.id}`)
-      if (emoji) {
-        console.log("CULT EMOJI:", emoji)
-        cult.emoji = emoji
-        cult.discordEmoji = emoji
-      }
-    }
   }
 }
 

@@ -6,6 +6,7 @@ class Proposal {
     this.effect = effect
     this.id = id
     this.cult = cult.id
+    this.channelId = cult.channels.proposals
     this.ayes = []
     this.nays = []
     this.data = data
@@ -25,7 +26,15 @@ class Proposal {
   }
 
   async _removeReaction(server, userId, emojiId) {
-    let channel = server.client.channels.cache.get(this.cult)
+    if(!this.channelId){
+      let cult = this.getCult(server)
+      if (cult){
+        this.channelId = cult.channels.proposals
+      } else {
+        return
+      }
+    }
+    let channel = server.client.channels.cache.get(this.channelId)
     let message = await channel.messages.fetch(this.id)
     if (!message) {
       console.log("proposal message", this.id, "not found in channel:", this.cult)

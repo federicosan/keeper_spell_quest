@@ -392,7 +392,7 @@ async function _conjureMonster(server, power, targetCultId) {
   console.log("creating channel...")
   let channel = await guild.channels.create(`⚔️${targetCult.emoji}${creature.name}`, {
     type: "text",
-    parentId: server.channels.DungeonSectionId,
+    parentId: targetCult.channels.DungeonSectionId,
     // prevent everyone from viewing, then set who can view
     permissionOverwrites: [
       {
@@ -401,7 +401,7 @@ async function _conjureMonster(server, power, targetCultId) {
       }
     ]
   })
-  await channel.setParent(server.channels.DungeonSectionId)
+  await channel.setParent(targetCult.channels.DungeonSectionId)
   console.log("channel created!")
   await SetChannelPermissions(server, channel, CULTIST_READ_WRITE)
   creature.channelId = channel.id
@@ -422,7 +422,7 @@ async function _conjureAlly(server, power, targetCultId) {
   var guild = server.client.guilds.cache.get(server.Id)
   let channel = await guild.channels.create(`🌱${targetCult.emoji}${creature.name}`, {
     type: "text",
-    parentId: server.channels.DungeonSectionId,
+    parentId: targetCult.channels.DungeonSectionId,
     permissionOverwrites: [
       {
         id: guild.id,
@@ -430,7 +430,7 @@ async function _conjureAlly(server, power, targetCultId) {
       }
     ]
   })
-  await channel.setParent(server.channels.DungeonSectionId)
+  await channel.setParent(targetCult.channels.DungeonSectionId)
   await SetChannelPermissions(server, channel, CULTIST_READ_WRITE)
   creature.channelId = channel.id
   server.db.collection("creatures").insertOne(creature)
@@ -454,7 +454,7 @@ async function _conjureFreezer(server, power, targetUserId) {
   console.log("creating channel...")
   let channel = await guild.channels.create(`⛓${targetCult.emoji}${member.displayName}`, {
     type: "text",
-    parentId: server.channels.DungeonSectionId,
+    parentId: targetCult.channels.DungeonSectionId,
     // prevent everyone from viewing, then set who can view
     permissionOverwrites: [
       {
@@ -463,7 +463,7 @@ async function _conjureFreezer(server, power, targetUserId) {
       }
     ]
   })
-  await channel.setParent(server.channels.DungeonSectionId)
+  await channel.setParent(targetCult.channels.DungeonSectionId)
   console.log("channel created!")
   await SetChannelPermissions(server, channel, CULTIST_READ_WRITE)
   creature.channelId = channel.id
