@@ -158,7 +158,7 @@ class Server {
         let msg = await channel.messages.fetch(messageId)
         if (msg) {
           try {
-            msg.edit(value)
+            await msg.edit(value)
           } catch(err){
             console.log("updateCachedMessage error:", err)
           }

@@ -113,7 +113,7 @@ class Chest {
       let msg = await channel.messages.fetch(this.messageId)
       if (msg) {
         try {
-          msg.edit({ embeds: [updatedMsg] })
+          await msg.edit({ embeds: [updatedMsg] })
         } catch(err){
           console.log("error editing msg:", err)
         }
@@ -187,7 +187,7 @@ class Chest {
       let msg = await channel.messages.fetch(this.messageId)
       if (msg) {
         try {
-          msg.edit({ embeds: [updatedMsg] })
+          await msg.edit({ embeds: [updatedMsg] })
         } catch(err){
           console.log("error editing msg:", err)
         }
