@@ -213,7 +213,7 @@ async function handle(msg) {
   if (msg.author.bot) {
     return
   }
-  if (server.isNoMessagesChannel(msg.channel.id)) {
+  if (server.isNoMessagesChannel(msg.channel.id) && !server.isAdmin(msg.author.id) && msg.interaction == null) {
     msg.delete() 
     return
   }
@@ -239,10 +239,6 @@ async function handle(msg) {
     console.log("reacting")
     msg.react(server.Emojis.AYE)
     msg.react(server.Emojis.NAY)
-    return
-  }
-  if (msg.channel.id == '986712037633720390' && !server.isAdmin(msg.author.id) && msg.interaction == null) {
-    msg.delete()
     return
   }
   if (msg.content.startsWith("!leaderboard")) {
